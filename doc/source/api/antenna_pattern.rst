@@ -39,8 +39,3 @@ Utility Functions
 .. autofunction:: sionna.rt.register_antenna_pattern
 .. autofunction:: sionna.rt.register_polarization
 .. autofunction:: sionna.rt.register_polarization_model
-
-References:
-   .. [Balanis97] A\. Balanis, "Antenna Theory: Analysis and Design," 2nd Edition, John Wiley & Sons, 1997.
-   .. [TR38901] 3GPP TR 38.901, "`Study on channel model for frequencies from 0.5
-    to 100 GHz <https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=3173>`_", Release 18.0

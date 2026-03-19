@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -90,7 +90,7 @@ def polarization_model_tr38901_1(
     slant_angle: mi.Float
 ) -> Tuple[mi.Complex2f, mi.Complex2f]:
     # pylint: disable=line-too-long
-    r"""Model-1 for polarized antennas from 3GPP TR 38.901 [TR38901]_
+    r"""Model-1 for polarized antennas from 3GPP TR 38.901 :cite:p:`TR38901_RT`
 
     Transforms a vertically polarized antenna pattern
     :math:`\tilde{C}_\theta(\theta, \varphi)`
@@ -101,10 +101,10 @@ def polarization_model_tr38901_1(
     and :math:`\zeta=\pm \pi/4` to a pair of cross polarized
     antenna elements.
 
-    The transformed antenna pattern is given by (7.3-3) [TR38901]_:
+    The transformed antenna pattern is given by (7.3-3) :cite:p:`TR38901_RT`:
 
     .. math::
-        \begin{align}
+        \begin{aligned}
             \begin{bmatrix}
                 C_\theta(\theta, \varphi) \\
                 C_\varphi(\theta, \varphi)
@@ -114,7 +114,7 @@ def polarization_model_tr38901_1(
             \end{bmatrix} \tilde{C}_\theta(\theta, \varphi)\\
             \cos(\psi) &= \frac{\cos(\zeta)\sin(\theta)+\sin(\zeta)\sin(\varphi)\cos(\theta)}{\sqrt{1-\left(\cos(\zeta)\cos(\theta)-\sin(\zeta)\sin(\varphi)\sin(\theta)\right)^2}} \\
             \sin(\psi) &= \frac{\sin(\zeta)\cos(\varphi)}{\sqrt{1-\left(\cos(\zeta)\cos(\theta)-\sin(\zeta)\sin(\varphi)\sin(\theta)\right)^2}}
-        \end{align}
+        \end{aligned}
 
     :param c_theta_tilde: Vertically polarized zenith pattern
         :math:`\tilde{C}_\theta(\theta, \varphi)`
@@ -154,7 +154,7 @@ def polarization_model_tr38901_2(
     phi: mi.Float,
     slant_angle: mi.Float
 ) -> Tuple[mi.Complex2f, mi.Complex2f]:
-    r"""Model-2 for polarized antennas from 3GPP TR 38.901 [TR38901]_
+    r"""Model-2 for polarized antennas from 3GPP TR 38.901 :cite:p:`TR38901_RT`
 
     Transforms a vertically polarized antenna pattern
     :math:`\tilde{C}_\theta(\theta, \varphi)`
@@ -165,10 +165,10 @@ def polarization_model_tr38901_2(
     and :math:`\zeta=\pm \pi/4` to a pair of cross polarized
     antenna elements.
 
-    The transformed antenna pattern is given by (7.3-4/5) [TR38901]_:
+    The transformed antenna pattern is given by (7.3-4/5) :cite:p:`TR38901_RT`:
 
     .. math::
-        \begin{align}
+        \begin{aligned}
             \begin{bmatrix}
                 C_\theta(\theta, \varphi) \\
                 C_\varphi(\theta, \varphi)
@@ -176,7 +176,7 @@ def polarization_model_tr38901_2(
              \cos(\zeta) \\
              \sin(\zeta)
             \end{bmatrix} \tilde{C}_\theta(\theta, \varphi)
-        \end{align}
+        \end{aligned}
 
     :param c_theta_tilde: Vertically polarized zenith pattern
         :math:`\tilde{C}_\theta(\theta, \varphi)`
@@ -229,7 +229,7 @@ def v_dipole_pattern(
 ) -> mi.Complex2f:
     r"""
     Vertically polarized short dipole antenna pattern function
-    from (Eq. 4-26a) [Balanis97]_
+    from (Eq. 4-26a) :cite:p:`Balanis97`
 
     :param theta: Elevation angle [rad]
     :param phi: Elevation angle [rad]
@@ -245,7 +245,7 @@ def v_hw_dipole_pattern(
 ) -> mi.Complex2f:
     r"""
     Vertically polarized half-wavelength dipole antenna pattern function
-    from (Eq. 4-84) [Balanis97]_
+    from (Eq. 4-84) :cite:p:`Balanis97`
 
     :param theta: Elevation angle [rad]
     :param phi: Elevation angle [rad]
@@ -266,7 +266,7 @@ def v_tr38901_pattern(
 ) -> mi.Complex2f:
     r"""
     Vertically polarized antenna pattern function from
-    3GPP TR 38.901 (Table 7.3-1) [TR38901]_
+    3GPP TR 38.901 (Table 7.3-1) :cite:p:`TR38901_RT`
 
     :param theta: Elevation angle [rad]
     :param phi: Elevation angle [rad]

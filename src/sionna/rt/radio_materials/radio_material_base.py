@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Base class for implementing a radio material"""
@@ -35,16 +35,15 @@ class RadioMaterialBase(mi.BSDF):
         # Scene object that uses this radio material
         self._scene: weakref.ref[scene_module.Scene] = lambda: None
 
-        # Read color from properties, if any
+        # Read color from properties
         color = None
-        for pname in ("color", "reflectance", "base_color"):
-            if pname in props:
-                color = tuple(props[pname])
-                del props[pname]
-                break
-        if color is None:
+        if 'color' in props:
+            color = props['color']
+            del props['color']
+            color = tuple(color)
+        else:
             # If not specified, use an arbitrary value
-            palette = matplotlib.colormaps.get_cmap("Pastel1")
+            palette = matplotlib.colormaps.get_cmap('Pastel1')
             i = np.random.randint(low=0, high=palette.N)
             color = palette((i % palette.N + 0.5) / palette.N)[:3]
         self._color = color

@@ -1,7 +1,7 @@
 Primer on Electromagnetics
 ##########################
 
-This section provides useful background for the general understanding of ray tracing for wireless propagation modelling. In particular, our goal is to provide a concise definition of a `channel impulse response` between a transmitting and receiving antenna, as done in (Ch. 2 & 3) [Wiesbeck]_. The notations and definitions will be used in the API documentation of Sionna's :doc:`Ray Tracing module <api/rt>`.
+This section provides useful background for the general understanding of ray tracing for wireless propagation modelling. In particular, our goal is to provide a concise definition of a `channel impulse response` between a transmitting and receiving antenna, as done in (Ch. 2 & 3) :cite:p:`Wiesbeck`. The notations and definitions will be used in the API documentation of Sionna's :doc:`Ray Tracing module <api/rt>`.
 
 
 Coordinate system, rotations, and vector fields
@@ -13,11 +13,11 @@ The spherical unit vectors are defined as
 .. math::
     :label: spherical_vecs
 
-    \begin{align}
+    \begin{aligned}
         \hat{\mathbf{r}}          (\theta, \varphi) &= \sin(\theta)\cos(\varphi) \hat{\mathbf{x}} + \sin(\theta)\sin(\varphi) \hat{\mathbf{y}} + \cos(\theta)\hat{\mathbf{z}}\\
         \hat{\boldsymbol{\theta}} (\theta, \varphi) &= \cos(\theta)\cos(\varphi) \hat{\mathbf{x}} + \cos(\theta)\sin(\varphi) \hat{\mathbf{y}} - \sin(\theta)\hat{\mathbf{z}}\\
         \hat{\boldsymbol{\varphi}}(\theta, \varphi) &=            -\sin(\varphi) \hat{\mathbf{x}} +             \cos(\varphi) \hat{\mathbf{y}}.
-    \end{align}
+    \end{aligned}
 
 For an arbitrary unit norm vector :math:`\hat{\mathbf{v}} = (x, y, z)`, the zenith and azimuth angles :math:`\theta` and :math:`\varphi` can be computed as
 
@@ -27,7 +27,7 @@ For an arbitrary unit norm vector :math:`\hat{\mathbf{v}} = (x, y, z)`, the zeni
     \theta  &= \cos^{-1}(z) \\
     \varphi &= \mathop{\text{atan2}}(y, x)
 
-where :math:`\mathop{\text{atan2}}(y, x)` is the two-argument inverse tangent function [atan2]_. As any vector uniquely determines :math:`\theta` and :math:`\varphi`, we sometimes also
+where :math:`\mathop{\text{atan2}}(y, x)` is the two-argument inverse tangent function :cite:p:`atan2`. As any vector uniquely determines :math:`\theta` and :math:`\varphi`, we sometimes also
 write :math:`\hat{\boldsymbol{\theta}}(\hat{\mathbf{v}})` and :math:`\hat{\boldsymbol{\varphi}}(\hat{\mathbf{v}})` instead of :math:`\hat{\boldsymbol{\theta}} (\theta, \varphi)` and :math:`\hat{\boldsymbol{\varphi}}(\theta, \varphi)`.
 
 A 3D rotation with yaw, pitch, and roll angles :math:`\alpha`, :math:`\beta`, and :math:`\gamma`, respectively, is expressed by the matrix
@@ -35,14 +35,14 @@ A 3D rotation with yaw, pitch, and roll angles :math:`\alpha`, :math:`\beta`, an
 .. math::
     :label: rotation
 
-    \begin{align}
+    \begin{aligned}
         \mathbf{R}(\alpha, \beta, \gamma) = \mathbf{R}_z(\alpha)\mathbf{R}_y(\beta)\mathbf{R}_x(\gamma)
-    \end{align}
+    \end{aligned}
 
 where :math:`\mathbf{R}_z(\alpha)`, :math:`\mathbf{R}_y(\beta)`, and :math:`\mathbf{R}_x(\gamma)` are rotation matrices around the :math:`z`, :math:`y`, and :math:`x` axes, respectively, which are defined as
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \mathbf{R}_z(\alpha) &= \begin{pmatrix}
                         \cos(\alpha) & -\sin(\alpha) & 0\\
                         \sin(\alpha) & \cos(\alpha) & 0\\
@@ -58,9 +58,9 @@ where :math:`\mathbf{R}_z(\alpha)`, :math:`\mathbf{R}_y(\beta)`, and :math:`\mat
                             0 & \cos(\gamma) & -\sin(\gamma)\\
                             0 & \sin(\gamma) & \cos(\gamma)
                       \end{pmatrix}.
-    \end{align}
+    \end{aligned}
 
-A closed-form expression for :math:`\mathbf{R}(\alpha, \beta, \gamma)` can be found in (7.1-4) [TR38901]_.
+A closed-form expression for :math:`\mathbf{R}(\alpha, \beta, \gamma)` can be found in (7.1-4) :cite:p:`TR38901_RT`.
 The reverse rotation is simply defined by :math:`\mathbf{R}^{-1}(\alpha, \beta, \gamma)=\mathbf{R}^\mathsf{T}(\alpha, \beta, \gamma)`.
 A vector :math:`\mathbf{x}` defined in a first coordinate system is represented in a second coordinate system rotated by :math:`\mathbf{R}(\alpha, \beta, \gamma)` with respect to the first one as :math:`\mathbf{x}'=\mathbf{R}^\mathsf{T}(\alpha, \beta, \gamma)\mathbf{x}`.
 If a point in the first coordinate system has spherical angles :math:`(\theta, \varphi)`, the corresponding angles :math:`(\theta', \varphi')` in the second coordinate system can be found to be
@@ -68,10 +68,10 @@ If a point in the first coordinate system has spherical angles :math:`(\theta, \
 .. math::
     :label: theta_phi_prime
 
-    \begin{align}
+    \begin{aligned}
         \theta' &= \cos^{-1}\left( \hat{\mathbf{z}}^\mathsf{T} \mathbf{R}^\mathsf{T}(\alpha, \beta, \gamma)\hat{\mathbf{r}}(\theta, \varphi)          \right)\\
         \varphi' &= \arg\left( \left( \hat{\mathbf{x}} + j\hat{\mathbf{y}}\right)^\mathsf{T} \mathbf{R}^\mathsf{T}(\alpha, \beta, \gamma)\hat{\mathbf{r}}(\theta, \varphi) \right).
-    \end{align}
+    \end{aligned}
 
 For a vector field :math:`\mathbf{F}'(\theta',\varphi')` expressed in local spherical coordinates
 
@@ -101,7 +101,7 @@ so that
 .. math::
     \mathbf{F}(\theta,\varphi) = F_{\theta}(\theta,\varphi)\hat{\boldsymbol{\theta}}(\theta,\varphi) + F_{\varphi}(\theta,\varphi)\hat{\boldsymbol{\varphi}}(\theta,\varphi).
 
-It sometimes also useful to find the rotation matrix that maps a unit vector :math:`\hat{\mathbf{a}}` to :math:`\hat{\mathbf{b}}`. This can be achieved with the help of Rodrigues' rotation formula [Wikipedia_Rodrigues]_ which defines the matrix
+It sometimes also useful to find the rotation matrix that maps a unit vector :math:`\hat{\mathbf{a}}` to :math:`\hat{\mathbf{b}}`. This can be achieved with the help of Rodrigues' rotation formula :cite:p:`Wikipedia_Rodrigues` which defines the matrix
 
 .. math::
     :label: rodrigues_matrix
@@ -117,7 +117,7 @@ where
                    -\hat{k}_y &  \hat{k}_x &          0
                  \end{bmatrix}\\
     \hat{\mathbf{k}} &= \frac{\hat{\mathbf{a}} \times \hat{\mathbf{b}}}{\lVert \hat{\mathbf{a}} \times \hat{\mathbf{b}} \rVert}\\
-    \cos\(\theta\) &=\hat{\mathbf{a}}^\mathsf{T}\hat{\mathbf{b}}
+    \theta &=\hat{\mathbf{a}}^\mathsf{T}\hat{\mathbf{b}}
 
 such that :math:`\mathbf{R}(\hat{\mathbf{a}}, \hat{\mathbf{b}})\hat{\mathbf{a}}=\hat{\mathbf{b}}`.
 
@@ -129,10 +129,10 @@ Planar Time-Harmonic Waves
 A time-harmonic planar electric wave :math:`\mathbf{E}(\mathbf{x}, t)\in\mathbb{C}^3` travelling in a homogeneous medium with wave vector :math:`\mathbf{k}\in\mathbb{C}^3` can be described at position :math:`\mathbf{x}\in\mathbb{R}^3` and time :math:`t` as
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \mathbf{E}(\mathbf{x}, t) &= \mathbf{E}_0 e^{j(\omega t -\mathbf{k}^{\mathsf{H}}\mathbf{x})}\\
                                   &= \mathbf{E}(\mathbf{x}) e^{j\omega t}
-    \end{align}
+    \end{aligned}
 
 where :math:`\mathbf{E}_0\in\mathbb{C}^3` is the field phasor. The wave vector can be decomposed as :math:`\mathbf{k}=k \hat{\mathbf{k}}`, where :math:`\hat{\mathbf{k}}` is a unit norm vector, :math:`k=\omega\sqrt{\varepsilon\mu}` is the wave number, and :math:`\omega=2\pi f` is the angular frequency. The permittivity :math:`\varepsilon` and permeability :math:`\mu` are defined as
 
@@ -156,7 +156,7 @@ The complex relative permittivity :math:`\eta` is given as
 
 where :math:`\varepsilon_r` is the real relative permittivity of a non-conducting dielectric.
 
-With these definitions, the speed of light is given as (Eq. 4-28d) [Balanis]_
+With these definitions, the speed of light is given as (Eq. 4-28d) :cite:p:`Balanis`
 
 .. math::
     c=\frac{1}{\sqrt{\varepsilon_0\varepsilon_r\mu}}\left\{\frac12\left(\sqrt{1+\left(\frac{\sigma}{\omega\varepsilon_0\varepsilon_r}\right)^2}+1\right)\right\}^{-\frac{1}{2}}
@@ -198,9 +198,9 @@ The complex antenna field pattern :math:`\mathbf{F}(\theta, \varphi)` is defined
 .. math::
     :label: F
 
-    \begin{align}
+    \begin{aligned}
         \mathbf{F}(\theta, \varphi) = \frac{ \mathbf{E}_0(\theta, \varphi)}{\max_{\theta,\varphi}\lVert  \mathbf{E}_0(\theta, \varphi) \rVert}.
-    \end{align}
+    \end{aligned}
 
 The time-averaged Poynting vector for such a spherical wave is
 
@@ -261,7 +261,7 @@ Combining :eq:`F` and :eq:`G`, we can obtain the following expression of the ele
 
 where we have added the subscript :math:`\text{T}` to all quantities that are specific to the transmitting antenna.
 
-The input power :math:`P_\text{T}` of an antenna with (conjugate matched) impedance :math:`Z_\text{T}`, fed by a voltage source with complex amplitude :math:`V_\text{T}`, is given by (see, e.g., [Wikipedia]_)
+The input power :math:`P_\text{T}` of an antenna with (conjugate matched) impedance :math:`Z_\text{T}`, fed by a voltage source with complex amplitude :math:`V_\text{T}`, is given by (see, e.g., :cite:p:`Wikipedia`)
 
 .. math::
     :label: P_T
@@ -273,11 +273,11 @@ The input power :math:`P_\text{T}` of an antenna with (conjugate matched) impeda
     The radiated power :math:`\eta_\text{rad} P_\text{T}` of an antenna can be obtained by integrating the Poynting vector over the surface of a closed sphere of radius :math:`r` around the antenna:
 
     .. math::
-        \begin{align}
+        \begin{aligned}
             \eta_\text{rad} P_\text{T} &=  \int_0^{2\pi}\int_0^{\pi} \mathbf{S}(r, \theta, \varphi)^\mathsf{T} \hat{\mathbf{r}} r^2 \sin(\theta)d\theta d\varphi \\
                             &= \int_0^{2\pi}\int_0^{\pi} \frac{1}{2Z_0} \lVert \mathbf{E}(r, \theta, \varphi) \rVert^2 r^2\sin(\theta)d\theta d\varphi \\
                             &= \frac{P_\text{T}}{4 \pi} \int_0^{2\pi}\int_0^{\pi} G(\theta, \varphi) \sin(\theta)d\theta d\varphi.
-        \end{align}
+        \end{aligned}
 
     We can see from the last equation that the directional gain of any antenna must satisfy
 
@@ -326,11 +326,11 @@ We can now combine :eq:`P_R`, :eq:`A_dir`, and :eq:`A_R` to obtain the following
 assuming matched polarization:
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         |V_\text{R}| &= \sqrt{P_\text{R} 8\Re\{Z_\text{R}\}}\\
                      &= \sqrt{\frac{\lambda^2}{4\pi} G_\text{R}(\theta_\text{R}, \varphi_\text{R}) \frac{8\Re\{Z_\text{R}\}}{2 Z_0} \lVert \mathbf{E}_\text{R} \rVert^2}\\
                      &= \sqrt{\frac{\lambda^2}{4\pi} G_\text{R} \frac{4\Re\{Z_\text{R}\}}{Z_0}} \lVert \mathbf{F}_\text{R}(\theta_\text{R}, \varphi_\text{R})\rVert\lVert\mathbf{E}_\text{R}\rVert.
-    \end{align}
+    \end{aligned}
 
 By extension of the previous equation, we can obtain an expression for :math:`V_\text{R}` which is valid for
 arbitrary polarizations of the incoming wave and the receiving antenna:
@@ -380,10 +380,10 @@ from all paths to obtain
 .. math::
     :label: V_Rmulti
 
-    \begin{align}
+    \begin{aligned}
     V_\text{R} &= \sqrt{\left(\frac{\lambda}{4\pi}\right)^2 G_\text{R}G_\text{T}P_\text{T} 8\Re\{Z_\text{R}\}} \sum_{n=1}^N\mathbf{F}_\text{R}(\theta_{\text{R},i}, \varphi_{\text{R},i})^{\mathsf{H}}\widetilde{\mathbf{T}}_i \mathbf{F}_\text{T}(\theta_{\text{T},i}, \varphi_{\text{T},i})\\
     &= \sqrt{\left(\frac{\lambda}{4\pi}\right)^2 P_\text{T} 8\Re\{Z_\text{R}\}} \sum_{n=1}^N\mathbf{C}_\text{R}(\theta_{\text{R},i}, \varphi_{\text{R},i})^{\mathsf{H}}\widetilde{\mathbf{T}}_i \mathbf{C}_\text{T}(\theta_{\text{T},i}, \varphi_{\text{T},i})
-    \end{align}
+    \end{aligned}
 
 where all path-dependent quantities carry the subscript :math:`i`. Note that the matrices :math:`\widetilde{\mathbf{T}}_i` also ensure appropriate scaling so that the total received power can never be larger than the transmit power.
 
@@ -421,7 +421,7 @@ Taking the inverse Fourier transform, we finally obtain the channel impulse resp
 
     \boxed{h(\tau) = \int_{-\infty}^{\infty} H(f) e^{j2\pi f \tau} df = \sum_{i=1}^N a_i \delta(\tau-\tau_i)}
 
-The baseband equivalent channel impulse reponse is then defined as (Eq. 2.28) [Tse]_:
+The baseband equivalent channel impulse reponse is then defined as (Eq. 2.28) :cite:p:`Tse_RT`:
 
 .. math::
     :label: h_b
@@ -431,7 +431,7 @@ The baseband equivalent channel impulse reponse is then defined as (Eq. 2.28) [T
 Reflection and Refraction
 *************************
 
-When a plane wave hits a plane interface which separates two materials, e.g., air and concrete, a part of the wave gets reflected and the other transmitted (or *refracted*), i.e., it propagates into the other material.  We assume in the following description that both materials are uniform non-magnetic dielectrics, i.e., :math:`\mu_r=1`, and follow the definitions as in [ITURP20403]_. The incoming wave phasor :math:`\mathbf{E}_\text{i}` is expressed by two arbitrary orthogonal polarization components, i.e.,
+When a plane wave hits a plane interface which separates two materials, e.g., air and concrete, a part of the wave gets reflected and the other transmitted (or *refracted*), i.e., it propagates into the other material.  We assume in the following description that both materials are uniform non-magnetic dielectrics, i.e., :math:`\mu_r=1`, and follow the definitions as in :cite:p:`ITURP20403`. The incoming wave phasor :math:`\mathbf{E}_\text{i}` is expressed by two arbitrary orthogonal polarization components, i.e.,
 
 .. math::
     \mathbf{E}_\text{i} = E_{\text{i},s} \hat{\mathbf{e}}_{\text{i},s} + E_{\text{i},p} \hat{\mathbf{e}}_{\text{i},p}
@@ -456,14 +456,14 @@ where the former is orthogonal to the plane of incidence and called transverse e
 .. math::
     :label: fresnel_in_vectors
 
-    \begin{align}
+    \begin{aligned}
         \hat{\mathbf{e}}_{\text{i},\perp} &= \frac{\hat{\mathbf{k}}_\text{i} \times \hat{\mathbf{n}}}{\lVert \hat{\mathbf{k}}_\text{i} \times \hat{\mathbf{n}} \rVert} \\
         \hat{\mathbf{e}}_{\text{i},\parallel} &= \hat{\mathbf{e}}_{\text{i},\perp} \times \hat{\mathbf{k}}_\text{i}
-    \end{align}
+    \end{aligned}
 
 
 .. math::
-    \begin{align}
+    \begin{aligned}
     \begin{bmatrix}E_{\text{i},\perp} \\ E_{\text{i},\parallel} \end{bmatrix} &=
         \begin{bmatrix}
             \hat{\mathbf{e}}_{\text{i},\perp}^\mathsf{T}\hat{\mathbf{e}}_{\text{i},s} & \hat{\mathbf{e}}_{\text{i},\perp}^\mathsf{T}\hat{\mathbf{e}}_{\text{i},p}\\
@@ -471,20 +471,20 @@ where the former is orthogonal to the plane of incidence and called transverse e
         \end{bmatrix}
      \begin{bmatrix}E_{\text{i},s} \\ E_{\text{i},p}\end{bmatrix} =
      \mathbf{W}\left(\hat{\mathbf{e}}_{\text{i},\perp}, \hat{\mathbf{e}}_{\text{i},\parallel}, \hat{\mathbf{e}}_{\text{i},s}, \hat{\mathbf{e}}_{\text{i},p}\right) \begin{bmatrix}E_{\text{i},s} \\ E_{\text{i},p}\end{bmatrix}
-    \end{align}
+    \end{aligned}
 
 where we have defined the following matrix-valued function
 
 .. math::
     :label: W
 
-    \begin{align}
+    \begin{aligned}
     \mathbf{W}\left(\hat{\mathbf{a}}, \hat{\mathbf{b}}, \hat{\mathbf{q}}, \hat{\mathbf{r}} \right) =
         \begin{bmatrix}
             \hat{\mathbf{a}}^\textsf{T} \hat{\mathbf{q}} & \hat{\mathbf{a}}^\textsf{T} \hat{\mathbf{r}} \\
             \hat{\mathbf{b}}^\textsf{T} \hat{\mathbf{q}} & \hat{\mathbf{b}}^\textsf{T} \hat{\mathbf{r}}
         \end{bmatrix}.
-    \end{align}
+    \end{aligned}
 
 While the angles of incidence and reflection are both equal to :math:`\theta_1`, the angle of the refracted wave :math:`\theta_2` is given by Snell's law:
 
@@ -499,44 +499,44 @@ or, equivalently,
 The reflected and transmitted wave phasors :math:`\mathbf{E}_\text{r}` and :math:`\mathbf{E}_\text{t}` are similarly represented as
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \mathbf{E}_\text{r} &= E_{\text{r},\perp} \hat{\mathbf{e}}_{\text{r},\perp} + E_{\text{r},\parallel} \hat{\mathbf{e}}_{\text{r},\parallel}\\
         \mathbf{E}_\text{t} &= E_{\text{t},\perp} \hat{\mathbf{e}}_{\text{t},\perp} + E_{\text{t},\parallel} \hat{\mathbf{e}}_{\text{t},\parallel}
-    \end{align}
+    \end{aligned}
 
 where
 
 .. math::
     :label: fresnel_out_vectors
 
-    \begin{align}
+    \begin{aligned}
         \hat{\mathbf{e}}_{\text{r},\perp} &= \hat{\mathbf{e}}_{\text{i},\perp}\\
         \hat{\mathbf{e}}_{\text{r},\parallel} &= \frac{\hat{\mathbf{e}}_{\text{r},\perp}\times\hat{\mathbf{k}}_\text{r}}{\lVert \hat{\mathbf{e}}_{\text{r},\perp}\times\hat{\mathbf{k}}_\text{r} \rVert}\\
         \hat{\mathbf{e}}_{\text{t},\perp} &= \hat{\mathbf{e}}_{\text{i},\perp}\\
         \hat{\mathbf{e}}_{\text{t},\parallel} &= \frac{\hat{\mathbf{e}}_{\text{t},\perp}\times\hat{\mathbf{k}}_\text{t}}{ \Vert \hat{\mathbf{e}}_{\text{t},\perp}\times\hat{\mathbf{k}}_\text{t} \rVert}
-    \end{align}
+    \end{aligned}
 
 and
 
 .. math::
     :label: reflected_refracted_vectors
 
-    \begin{align}
+    \begin{aligned}
         \hat{\mathbf{k}}_\text{r} &= \hat{\mathbf{k}}_\text{i} - 2\left( \hat{\mathbf{k}}_\text{i}^\mathsf{T}\hat{\mathbf{n}} \right)\hat{\mathbf{n}}\\
         \hat{\mathbf{k}}_\text{t} &= \sqrt{\frac{\eta_1}{\eta_2}} \hat{\mathbf{k}}_\text{i} + \left(\sqrt{\frac{\eta_1}{\eta_2}}\cos(\theta_1) - \cos(\theta_2) \right)\hat{\mathbf{n}}.
-    \end{align}
+    \end{aligned}
 
 The *Fresnel* equations provide relationships between the incident, reflected, and refracted field components for :math:`\sqrt{\left| \eta_1/\eta_2 \right|}\sin(\theta_1)<1`:
 
 .. math::
     :label: fresnel
 
-    \begin{align}
+    \begin{aligned}
         r_{\perp}     &= \frac{E_{\text{r}, \perp    }}{E_{\text{i}, \perp    }} = \frac{ \sqrt{\eta_1}\cos(\theta_1) - \sqrt{\eta_2}\cos(\theta_2) }{ \sqrt{\eta_1}\cos(\theta_1) + \sqrt{\eta_2}\cos(\theta_2) } \\
         r_{\parallel} &= \frac{E_{\text{r}, \parallel}}{E_{\text{i}, \parallel}} = \frac{ \sqrt{\eta_2}\cos(\theta_1) - \sqrt{\eta_1}\cos(\theta_2) }{ \sqrt{\eta_2}\cos(\theta_1) + \sqrt{\eta_1}\cos(\theta_2) } \\
         t_{\perp}     &= \frac{E_{\text{t}, \perp    }}{E_{\text{i}, \perp    }} = \frac{ 2\sqrt{\eta_1}\cos(\theta_1) }{ \sqrt{\eta_1}\cos(\theta_1) + \sqrt{\eta_2}\cos(\theta_2) } \\
         t_{\parallel} &= \frac{E_{\text{t}, \parallel}}{E_{\text{i}, \parallel}} = \frac{ 2\sqrt{\eta_1}\cos(\theta_1) }{ \sqrt{\eta_2}\cos(\theta_1) + \sqrt{\eta_1}\cos(\theta_2) }.
-    \end{align}
+    \end{aligned}
 
 If :math:`\sqrt{\left| \eta_1/\eta_2 \right|}\sin(\theta_1)\ge 1`, we have :math:`r_{\perp}=r_{\parallel}=1` and :math:`t_{\perp}=t_{\parallel}=0`, i.e., total reflection.
 
@@ -545,17 +545,17 @@ For the case of an incident wave in vacuum, i.e., :math:`\eta_1=1`, the Fresnel 
 .. math::
     :label: fresnel_vac
 
-    \begin{align}
+    \begin{aligned}
         r_{\perp}     &= \frac{\cos(\theta_1) -\sqrt{\eta_2 -\sin^2(\theta_1)}}{\cos(\theta_1) +\sqrt{\eta_2 -\sin^2(\theta_1)}} \\
         r_{\parallel} &= \frac{\eta_2\cos(\theta_1) -\sqrt{\eta_2 -\sin^2(\theta_1)}}{\eta_2\cos(\theta_1) +\sqrt{\eta_2 -\sin^2(\theta_1)}} \\
         t_{\perp}     &= \frac{2\cos(\theta_1)}{\cos(\theta_1) + \sqrt{\eta_2-\sin^2(\theta_1)}}\\
         t_{\parallel} &= \frac{2\sqrt{\eta_2}\cos(\theta_1)}{\eta_2 \cos(\theta_1) + \sqrt{\eta_2-\sin^2(\theta_1)}}.
-    \end{align}
+    \end{aligned}
 
 Putting everything together, we obtain the following relationships between incident, reflected, and transmitted waves:
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \begin{bmatrix}E_{\text{r},\perp} \\ E_{\text{r},\parallel} \end{bmatrix} &=
         \begin{bmatrix}
             r_{\perp} & 0 \\
@@ -570,7 +570,7 @@ Putting everything together, we obtain the following relationships between incid
         \end{bmatrix}
         \mathbf{W}\left(\hat{\mathbf{e}}_{\text{i},\perp}, \hat{\mathbf{e}}_{\text{i},\parallel}, \hat{\mathbf{e}}_{\text{i},s}, \hat{\mathbf{e}}_{\text{i},p}\right)
      \begin{bmatrix}E_{\text{i},s} \\ E_{\text{i},p}\end{bmatrix}.
-    \end{align}
+    \end{aligned}
 
 
 Single-layer Slab
@@ -589,7 +589,7 @@ to assume that the object has a finite thickness. In such cases, the object can
 be modeled as a slab consisting of a single layer made of the same material, as
 shown in :numref:`fig_slab`. The
 reflection and transmission coefficients, which should be used instead of
-:eq:`fresnel_vac`, are then computed as described in (Section 2.2.2.2) [ITURP20403]_:
+:eq:`fresnel_vac`, are then computed as described in (Section 2.2.2.2) :cite:p:`ITURP20403`:
 
 .. math::
     :label: fresnel_slab
@@ -613,11 +613,11 @@ defined in :eq:`eta`, and :math:`r'` denotes either :math:`r_{\perp}` or
 
 Diffraction
 ***********
-While modern geometrical optics (GO) [Kline]_, [Luneberg]_ can accurately describe phase and polarization properties of electromagnetic fields undergoing reflection and refraction (transmission) as described above, they fail to account for the phenomenon of diffraction, e.g., bending of waves around corners. This leads to the undesired and physically incorrect effect that the field abruptly falls to zero at geometrical shadow boundaries (for incident and reflected fields).
+While modern geometrical optics (GO) :cite:p:`Kline`, :cite:p:`Luneberg` can accurately describe phase and polarization properties of electromagnetic fields undergoing reflection and refraction (transmission) as described above, they fail to account for the phenomenon of diffraction, e.g., bending of waves around corners. This leads to the undesired and physically incorrect effect that the field abruptly falls to zero at geometrical shadow boundaries (for incident and reflected fields).
 
-Joseph Keller presented in [Keller62]_ a method which allowed the incorporation of diffraction into GO which is known as the geometrical theory of diffraction (GTD). He introduced the notion of diffracted rays that follow the law of edge diffraction, i.e., the diffracted and incident rays make the same angle with the edge at the point of diffraction and lie on opposite sides of the plane normal to the edge. The GTD suffers, however from several shortcomings, most importantly the fact that the diffracted field is infinite at shadow boundaries.
+Joseph Keller presented in :cite:p:`Keller62` a method which allowed the incorporation of diffraction into GO which is known as the geometrical theory of diffraction (GTD). He introduced the notion of diffracted rays that follow the law of edge diffraction, i.e., the diffracted and incident rays make the same angle with the edge at the point of diffraction and lie on opposite sides of the plane normal to the edge. The GTD suffers, however from several shortcomings, most importantly the fact that the diffracted field is infinite at shadow boundaries.
 
-The uniform theory of diffraction (UTD) [Kouyoumjian74]_ alleviates this problem and provides solutions that are uniformly valid, even at shadow boundaries. For a great introduction to the UTD, we refer to [McNamara90]_. While [Kouyoumjian74]_ deals with diffraction at edges of perfectly conducting surfaces, it was heuristically extended to finitely conducting wedges in [Luebbers84]_. This solution, which is also recomended by the ITU [ITURP52615]_, is implemented in Sionna. However, both [Luebbers84]_ and [ITURP52615]_ only deal with two-dimensional scenes where source and observation lie in the same plane, orthogonal to the edge. We will provide below the three-dimensional version of [Luebbers84]_, following the defintitions of (Ch. 6) [McNamara90]_. A similar result can be found, e.g., in (Eq. 6-29---6-39) [METIS]_.
+The uniform theory of diffraction (UTD) :cite:p:`Kouyoumjian74` alleviates this problem and provides solutions that are uniformly valid, even at shadow boundaries. For a great introduction to the UTD, we refer to :cite:p:`McNamara90`. While :cite:p:`Kouyoumjian74` deals with diffraction at edges of perfectly conducting surfaces, it was heuristically extended to finitely conducting wedges in :cite:p:`Luebbers84`. This solution, which is also recomended by the ITU :cite:p:`ITURP52615`, is implemented in Sionna. However, both :cite:p:`Luebbers84` and :cite:p:`ITURP52615` only deal with two-dimensional scenes where source and observation lie in the same plane, orthogonal to the edge. We will provide below the three-dimensional version of :cite:p:`Luebbers84`, following the defintitions of (Ch. 6) :cite:p:`McNamara90`. A similar result can be found, e.g., in (Eq. 6-29---6-39) :cite:p:`METIS`.
 
 .. _fig_kellers_cone:
 .. figure:: figures/kellers_cone.svg
@@ -638,12 +638,12 @@ To be able to express the diffraction coefficients as a 2x2 matrix---similar to 
 The corresponding component unit vectors are defined as
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \hat{\boldsymbol{\phi}}' &= \frac{\hat{\mathbf{s}}' \times \hat{\mathbf{e}}}{\lVert \hat{\mathbf{s}}' \times \hat{\mathbf{e}} \rVert }\\
         \hat{\boldsymbol{\beta}}_0' &=  \hat{\boldsymbol{\phi}}' \times \hat{\mathbf{s}}' \\
         \hat{\boldsymbol{\phi}} &= -\frac{\hat{\mathbf{s}} \times \hat{\mathbf{e}}}{\lVert \hat{\mathbf{s}} \times \hat{\mathbf{e}} \rVert }\\
         \hat{\boldsymbol{\beta}}_0 &=  \hat{\boldsymbol{\phi}} \times \hat{\mathbf{s}}.
-    \end{align}
+    \end{aligned}
 
 :numref:`fig_diffraction` below shows the top view on the wedge that we need for some additional definitions.
 
@@ -660,19 +660,19 @@ The incident and diffracted rays have angles :math:`\phi'` and :math:`\phi` meas
 They can be computed as follows:
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \phi' & = \pi - \left[\pi - \cos^{-1}\left( -\hat{\mathbf{s}}_t'^\textsf{T} \hat{\mathbf{t}}_0\right) \right] \mathop{\text{sgn}}\left(-\hat{\mathbf{s}}_t'^\textsf{T} \hat{\mathbf{n}}_0\right)\\
         \phi & = \pi - \left[\pi - \cos^{-1}\left( \hat{\mathbf{s}}_t^\textsf{T} \hat{\mathbf{t}}_0\right) \right] \mathop{\text{sgn}}\left(\hat{\mathbf{s}}_t^\textsf{T} \hat{\mathbf{n}}_0\right)
-    \end{align}
+    \end{aligned}
 
 where
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \hat{\mathbf{t}}_0 &= \hat{\mathbf{n}}_0 \times \hat{\mathbf{e}}\\
         \hat{\mathbf{s}}_t' &= \frac{ \hat{\mathbf{s}}' - \left( \hat{\mathbf{s}}'^\textsf{T}\hat{\mathbf{e}} \right)\hat{\mathbf{e}} }{\lVert \hat{\mathbf{s}}' - \left( \hat{\mathbf{s}}'^\textsf{T}\hat{\mathbf{e}} \right)\hat{\mathbf{e}}  \rVert}\\
         \hat{\mathbf{s}}_t  &= \frac{ \hat{\mathbf{s}} - \left( \hat{\mathbf{s}}^\textsf{T}\hat{\mathbf{e}} \right)\hat{\mathbf{e}} }{\lVert \hat{\mathbf{s}} - \left( \hat{\mathbf{s}}^\textsf{T}\hat{\mathbf{e}} \right)\hat{\mathbf{e}}  \rVert}
-    \end{align}
+    \end{aligned}
 
 are the unit vector tangential to the *0-face*, as well as the unit vectors pointing in the directions of :math:`\hat{\mathbf{s}}'` and :math:`\hat{\mathbf{s}}`, projected on the plane perpendicular to the edge, respectively. The function :math:`\mathop{\text{sgn}}(x)` is defined in this context as
 
@@ -685,7 +685,7 @@ are the unit vector tangential to the *0-face*, as well as the unit vectors poin
 With these definitions, the diffracted field at point :math:`S` can be computed from the incoming field at point :math:`S'` as follows:
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \begin{bmatrix}
             E_{d,\phi} \\
             E_{d,\beta_0}
@@ -693,77 +693,77 @@ With these definitions, the diffracted field at point :math:`S` can be computed 
             E_{i,\phi'} \\
             E_{i,\beta_0'}
         \end{bmatrix}(S') \sqrt{\frac{1}{s's(s'+s)}} e^{-jk(s'+s)}
-    \end{align}
+    \end{aligned}
 
 where :math:`k=2\pi/\lambda` is the wave number and the matrices :math:`\mathbf{R}_\nu,\, \nu \in [0,n]`, are given as
 
 .. math ::
     :label: diff_mat
 
-    \begin{align}
+    \begin{aligned}
         \mathbf{R}_\nu = \mathbf{W}\left(\hat{\boldsymbol{\phi}}, \hat{\boldsymbol{\beta}}_0, \hat{\mathbf{e}}_{r, \perp, \nu}, \hat{\mathbf{e}}_{r, \parallel, \nu}  \right)
                         \begin{bmatrix}
                             r_{\perp}(\theta_{r,\nu}, \eta_{\nu}) & 0\\
                             0 & r_{\parallel}(\theta_{r,\nu}, \eta_{nu})
                         \end{bmatrix}
                          \mathbf{W}\left( \hat{\mathbf{e}}_{i, \perp, \nu}, \hat{\mathbf{e}}_{i, \parallel, \nu}, \hat{\boldsymbol{\phi}}', \hat{\boldsymbol{\beta}}_0' \right)
-    \end{align}
+    \end{aligned}
 
-with :math:`\mathbf{W}(\cdot)` as defined in :eq:`W`, where :math:`r_{\perp}(\theta_{r,\nu}, \eta_{\nu})` and :math:`r_{\parallel}(\theta_{r,\nu}, \eta_{\nu})` are the Fresnel reflection coefficents from :eq:`fresnel_vac`, evaluated for the complex relative permittivities :math:`\eta_{\nu}` and angles :math:`\theta_{r_,\nu}` with cosines
+with :math:`\mathbf{W}(\cdot)` as defined in :eq:`W`, where :math:`r_{\perp}(\theta_{r,\nu}, \eta_{\nu})` and :math:`r_{\parallel}(\theta_{r,\nu}, \eta_{\nu})` are the Fresnel reflection coefficents from :eq:`fresnel_vac`, evaluated for the complex relative permittivities :math:`\eta_{\nu}` and angles :math:`\theta_{r,\nu}` with cosines
 
 .. math::
     :label: diffraction_cos
 
-    \begin{align}
+    \begin{aligned}
         \cos\left(\theta_{r,0}\right) &= \left|\sin(\phi') \right|\\
         \cos\left(\theta_{r,n}\right) &= \left|\sin(n\pi -\phi) \right|.
-    \end{align}
+    \end{aligned}
 
 and where
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         \hat{\mathbf{e}}_{i,\perp,\nu} &= \frac{ \hat{\mathbf{s}}' \times \hat{\mathbf{n}}_{\nu} }{\lVert \hat{\mathbf{s}}' \times \hat{\mathbf{n}}_{\nu} \rVert}\\
         \hat{\mathbf{e}}_{i,\parallel,\nu} &=  \hat{\mathbf{e}}_{i,\perp,\nu} \times \hat{\mathbf{s}}'\\
         \hat{\mathbf{e}}_{r,\perp,\nu} &=  \hat{\mathbf{e}}_{i,\perp,\nu}\\
         \hat{\mathbf{e}}_{r,\parallel,\nu} &=  \hat{\mathbf{e}}_{i,\perp,\nu} \times \hat{\mathbf{s}}
-    \end{align}
+    \end{aligned}
 
-as already defined in :eq:`fresnel_in_vectors` and :eq:`fresnel_out_vectors`, but made explicit here for the case of diffraction. The matrices :math:`\mathbf{R}_\nu` simply describe the reflected field from both surfaces in the basis used for the description of the diffraction process. Note that the absolute value is used in :eq:`diffraction_cos` to account for virtual reflections from shadowed surfaces, see the discussion in (p.185) [McNamara90]_.
+as already defined in :eq:`fresnel_in_vectors` and :eq:`fresnel_out_vectors`, but made explicit here for the case of diffraction. The matrices :math:`\mathbf{R}_\nu` simply describe the reflected field from both surfaces in the basis used for the description of the diffraction process. Note that the absolute value is used in :eq:`diffraction_cos` to account for virtual reflections from shadowed surfaces, see the discussion in (p.185) :cite:p:`McNamara90`.
 The diffraction coefficients :math:`D_1,\dots,D_4` are computed as
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         D_1 &= \frac{-e^{-\frac{j\pi}{4}}}{2n\sqrt{2\pi k} \sin(\beta_0)} \mathop{\text{cot}}\left( \frac{\pi+(\phi-\phi')}{2n}\right) F\left( k L a^+(\phi-\phi')\right)\\
         D_2 &= \frac{-e^{-\frac{j\pi}{4}}}{2n\sqrt{2\pi k} \sin(\beta_0)} \mathop{\text{cot}}\left( \frac{\pi-(\phi-\phi')}{2n}\right) F\left( k L a^-(\phi-\phi')\right)\\
         D_3 &= \frac{-e^{-\frac{j\pi}{4}}}{2n\sqrt{2\pi k} \sin(\beta_0)} \mathop{\text{cot}}\left( \frac{\pi+(\phi+\phi')}{2n}\right) F\left( k L a^+(\phi+\phi')\right)\\
         D_4 &= \frac{-e^{-\frac{j\pi}{4}}}{2n\sqrt{2\pi k} \sin(\beta_0)} \mathop{\text{cot}}\left( \frac{\pi-(\phi+\phi')}{2n}\right) F\left( k L a^-(\phi+\phi')\right)
-    \end{align}
+    \end{aligned}
 
 where
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         L &= \frac{ss'}{s+s'}\sin^2(\beta_0)\\
         a^{\pm}(\beta) &= 2\cos^2\left(\frac{2n\pi N^{\pm}-\beta}{2}\right)\\
         N^{\pm} &= \mathop{\text{round}}\left(\frac{\beta\pm\pi}{2n\pi}\right)\\
         F(x) &= 2j\sqrt{x}e^{jx}\int_{\sqrt{x}}^\infty e^{-jt^2}dt
-    \end{align}
+    \end{aligned}
 
-and :math:`\mathop{\text{round}}()` is the function that rounds to the closest integer. The function :math:`F(x)` can be expressed with the help of the standard Fresnel integrals [Fresnel]_
+and :math:`\mathop{\text{round}}()` is the function that rounds to the closest integer. The function :math:`F(x)` can be expressed with the help of the standard Fresnel integrals :cite:p:`Fresnel`
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         S(x) &= \int_0^x \sin\left( \pi t^2/2 \right)dt \\
         C(x) &= \int_0^x \cos\left( \pi t^2/2 \right)dt
-    \end{align}
+    \end{aligned}
 
 as
 
 .. math::
-    \begin{align}
+    \begin{aligned}
         F(x) = \sqrt{\frac{\pi x}{2}} e^{jx} \left[1+j-2\left( S\left(\sqrt{2x/\pi}\right) +jC\left(\sqrt{2x/\pi}\right) \right) \right].
-    \end{align}
+    \end{aligned}
 
 
 .. _em_primer_scattering:
@@ -771,7 +771,7 @@ as
 Scattering
 **********
 When an electromagnetic wave impinges on a surface, one part of the energy gets reflected while the other part gets refracted, i.e., it propagates into the surface.
-We distinguish between two types of reflection, specular and diffuse. The former type is discussed in `Reflection and Refraction`_ and we will focus now on the latter type which is also called diffuse scattering. When a rays hits a diffuse reflection surface, it is not reflected into a single (specular) direction but rather scattered toward many different directions. Since most surfaces give both specular and diffuse reflections, we denote by :math:`S^2` the fraction of the reflected energy that is diffusely scattered, where :math:`S\in[0,1]` is the so-called *scattering coefficient* [Degli-Esposti07]_. Similarly, :math:`R^2` is the specularly reflected fraction of the reflected energy, where :math:`R\in[0,1]` is the *reflection reduction factor*. The following relationship between :math:`R` and :math:`S` holds:
+We distinguish between two types of reflection, specular and diffuse. The former type is discussed in `Reflection and Refraction`_ and we will focus now on the latter type which is also called diffuse scattering. When a rays hits a diffuse reflection surface, it is not reflected into a single (specular) direction but rather scattered toward many different directions. Since most surfaces give both specular and diffuse reflections, we denote by :math:`S^2` the fraction of the reflected energy that is diffusely scattered, where :math:`S\in[0,1]` is the so-called *scattering coefficient* :cite:p:`Degli-Esposti07`. Similarly, :math:`R^2` is the specularly reflected fraction of the reflected energy, where :math:`R\in[0,1]` is the *reflection reduction factor*. The following relationship between :math:`R` and :math:`S` holds:
 
 .. math::
     :label: scattering_coefficient
@@ -791,11 +791,11 @@ Let us consider an incoming locally planar linearly polarized wave with field ph
 The incoming field phasor can be represented by two arbitrary orthogonal polarization components (both orthogonal to the incoming wave vector :math:`\hat{\mathbf{k}}_i`):
 
 .. math::
-    \begin{align}
+    \begin{aligned}
     \mathbf{E}_\text{i}(\mathbf{q}) &= E_{\text{i},s} \hat{\mathbf{e}}_{\text{i},s} + E_{\text{i},p} \hat{\mathbf{e}}_{\text{i},p} \\
                         &= E_{\text{i},\perp} \hat{\mathbf{e}}_{\text{i},\perp} + E_{\text{i},\parallel} \hat{\mathbf{e}}_{\text{i},\parallel} \\
                         &= E_{\text{i},\theta} \hat{\boldsymbol{\theta}}(\hat{\mathbf{k}}_\text{i}) + E_{\text{i},\phi} \hat{\boldsymbol{\varphi}}(\hat{\mathbf{k}}_\text{i})
-    \end{align}
+    \end{aligned}
 
 where me have omitted the dependence of the field strength on the position :math:`\mathbf{q}` for brevity.
 The second representation via :math:`(E_{\text{i},\perp},
@@ -804,7 +804,7 @@ field as explained in `Reflection and refraction`_. The third representation
 decomposes the field into a vertically and horizontally polarized component,
 where :math:`\hat{\boldsymbol{\theta}}, \hat{\boldsymbol{\varphi}}` are defined in :eq:`spherical_vecs`.
 
-According to (Eq. 9) [Degli-Esposti11]_, the diffusely scattered field :math:`\mathbf{E}_\text{s}(\mathbf{r})` at the observation point :math:`\mathbf{r}` can be modeled as
+According to (Eq. 9) :cite:p:`Degli-Esposti11`, the diffusely scattered field :math:`\mathbf{E}_\text{s}(\mathbf{r})` at the observation point :math:`\mathbf{r}` can be modeled as
 :math:`\mathbf{E}_\text{s}(\mathbf{r})=E_{\text{s},
 \theta}\hat{\boldsymbol{\theta}}(\hat{\mathbf{k}}_\text{s}) + E_{\text{s},
 \varphi}\hat{\boldsymbol{\varphi}}(\hat{\mathbf{k}}_\text{s})`, where the orthogonal field components are computed as
@@ -836,7 +836,7 @@ where :math:`r_{\perp}, r_{\parallel}` are defined in :eq:`fresnel`, :math:`\chi
 
 This quantity determines how much energy gets transfered from one polarization
 direction into the other through the scattering process.
-Lastly, `dA` is the size of the small area element on the reflecting surface under consideration, and :math:`f_\text{s}\left(\hat{\mathbf{k}}_i, \hat{\mathbf{k}}_s, \hat{\mathbf{n}}\right)` is the *scattering pattern*, which has similarities with the bidirectional reflectance distribution function (BRDF) in computer graphics (Ch. 5.6.1) [Pharr]_.
+Lastly, `dA` is the size of the small area element on the reflecting surface under consideration, and :math:`f_\text{s}\left(\hat{\mathbf{k}}_i, \hat{\mathbf{k}}_s, \hat{\mathbf{n}}\right)` is the *scattering pattern*, which has similarities with the bidirectional reflectance distribution function (BRDF) in computer graphics (Ch. 5.6.1) :cite:p:`Pharr`.
 The scattering pattern must be normalized to satisfy the condition
 
 .. math::
@@ -846,7 +846,7 @@ which ensures the power balance between the incoming, reflected, and refracted f
 
 .. admonition:: Example scattering patterns
 
-    The authors of [Degli-Esposti07]_ derived several simple scattering patterns that were shown to achieve good agreement with measurements when correctly parametrized.
+    The authors of :cite:p:`Degli-Esposti07` derived several simple scattering patterns that were shown to achieve good agreement with measurements when correctly parametrized.
 
     **Lambertian Model** (:class:`~sionna.rt.LambertianPattern`):
     This model describes a perfectly diffuse scattering surface whose *scattering radiation lobe* has its maximum in the direction of the surface normal:
@@ -889,13 +889,13 @@ which ensures the power balance between the incoming, reflected, and refracted f
 
 Reconfigurable Intelligent Surfaces (RIS)
 *****************************************
-Metasurfaces can manipulate electromagnetic waves in a way that traditional materials cannot. For example, they can be used to create anomalous reflections, focalization, as well as polarization changes. A reconfigurable intelligent surface (RIS) is a special type of metasurface that can be dynamically controlled to achieve favorable propagation conditions in a specific enviroment. While many different ways to model RIS have been proposed in the literature [Di-Renzo20]_, we adopt here the ones described in [Degli-Esposti22]_ and [Vitucci24]_. The former will be used for the computation of channel impulse responses (CIRs) (see :meth:`~sionna.rt.Scene.compute_paths`) while the latter will serve for the computation of coverage maps (see :meth:`~sionna.rt.Scene.coverage_map`).
+Metasurfaces can manipulate electromagnetic waves in a way that traditional materials cannot. For example, they can be used to create anomalous reflections, focalization, as well as polarization changes. A reconfigurable intelligent surface (RIS) is a special type of metasurface that can be dynamically controlled to achieve favorable propagation conditions in a specific enviroment. While many different ways to model RIS have been proposed in the literature :cite:p:`Di-Renzo20`, we adopt here the ones described in :cite:p:`Degli-Esposti22` and :cite:p:`Vitucci24`. The former will be used for the computation of channel impulse responses (CIRs) (see :meth:`~sionna.rt.Scene.compute_paths`) while the latter will serve for the computation of coverage maps (see :meth:`~sionna.rt.Scene.coverage_map`).
 
 We consider only lossless RIS, i.e., there is no power dissipation. For waves incident on the front side of an RIS, only the reradiated modes but neither specular nor diffuse reflections are created. For waves incident on the back side, an RIS behaves like a perfect absorber. For coverage maps, diffraction around the RIS' edges is ignored.
 
 An RIS consists of a regular grid of unit cells which impose a spatial modulation, i.e., phase and amplitude changes, on an incident wave. This leads in turn to the creation of :math:`M\ge 1` reradiated modes. Let us denote by :math:`(y,z)` a generic point on the RIS, and by :math:`\chi_m(y,z)` and :math:`A_m(y,z)` the phase and amplitude modulation coefficients of the :math:`m\text{th}` reradiation mode, respectively. We assume that the RIS' normal :math:`\hat{\mathbf{n}}` points toward the positive :math:`x`-axis.
 
-The spatial modulation coefficient :math:`\Gamma(y,z)` is then given as (Eq.12) [Degli-Esposti22]_
+The spatial modulation coefficient :math:`\Gamma(y,z)` is then given as (Eq.12) :cite:p:`Degli-Esposti22`
 
 .. math::
     :label: spatial_modulation_coefficient
@@ -912,15 +912,15 @@ where :math:`p_m` is the reradiation intensity coefficient of the :math:`m\text{
         Incident and reradiated field from a reconfigurable intelligent surface (RIS).
 
 
-Consider now an RIS as shown in :numref:`fig_ris` with an incident electro-magnetic wave with field phasor :math:`\mathbf{E}_i(S)` at point :math:`S\in\mathbb{R}^3`, where :math:`E_{i,\theta}(S)` and :math:`E_{i,\varphi}(S)` denote the vertical and horizontal field components, respectively.  The reradiated field from the RIS at point :math:`S'` is computed as (Eq.30) [Degli-Esposti22]_:
+Consider now an RIS as shown in :numref:`fig_ris` with an incident electro-magnetic wave with field phasor :math:`\mathbf{E}_i(S)` at point :math:`S\in\mathbb{R}^3`, where :math:`E_{i,\theta}(S)` and :math:`E_{i,\varphi}(S)` denote the vertical and horizontal field components, respectively.  The reradiated field from the RIS at point :math:`S'` is computed as (Eq.30) :cite:p:`Degli-Esposti22`:
 
 .. math::
     :label: ris_field
 
-    \begin{align}
+    \begin{aligned}
     \mathbf{E}_r(S') =& \sum_{u=1}^{N_Y}\sum_{v=1}^{N_Z} \Gamma(y_u, z_v) \frac{3\lambda}{16\pi} (1+\cos\theta_i(y_u, z_v)) (1+\cos\theta_r(y_u, z_v)) \\
     &\quad \times \frac{e^{-jk_0(s_i(y_u, z_v) + s_r(y_u, z_v))}}{s_i(y_u, z_v) s_r(y_u, z_v)} \left( E_{i,\theta}(S) \hat{\boldsymbol{\theta}}(\hat{\mathbf{k}}_r(y_u,z_v))  + E_{i,\varphi}(S) \hat{\boldsymbol{\varphi}}(\hat{\mathbf{k}}_r(y_u,z_v)) \right)
-    \end{align}
+    \end{aligned}
 
 where :math:`N_Y` and :math:`N_Z` are the number of columns and rows of the regular grid of unit cells with coordinates :math:`(y_u, z_v)` for :math:`1\leq u \leq N_Y` and :math:`1\leq v \leq N_Z`, :math:`\hat{\mathbf{k}}_i(y_u,z_v)` and  :math:`\hat{\mathbf{k}}_r(y_u,z_v)` are the directions of the incident and reradiated waves at position :math:`(y_u,z_v)`, :math:`\theta_i(y_u, z_v)`  and :math:`\theta_r(y_u, z_v)` are the angles between the RIS's normal and the incident and reradiated directions, respectively, and :math:`s_i(y_u, z_v)` and :math:`s_r(y_u, z_v)` are the distances between the unit cell :math:`(y_u, z_v)` and :math:`S, S'`, respectively. With a slight abuse of notation, we denote by :math:`\hat{\boldsymbol{\theta}}(\hat{\mathbf{k}})` and :math:`\hat{\boldsymbol{\varphi}}(\hat{\mathbf{k}})` the spherical unit vectors :eq:`spherical_vecs` for angles defined by :math:`\hat{\mathbf{k}}` according to :eq:`theta_phi`. One can observe from the last equation that the RIS does not impact the polarization.
 Note that :eq:`ris_field` is only used in :meth:`~sionna.rt.Scene.compute_paths` for the computation of the channel impulse response.
@@ -932,15 +932,15 @@ Note that :eq:`ris_field` is only used in :meth:`~sionna.rt.Scene.compute_paths`
 
         An RIS anomalously reflects an incoming ray due to its phase gradient :math:`\nabla\chi_m`.
 
-For the computation of coverage maps, the ray-based model from [Vitucci24]_ is used. :numref:`fig_ris_ray` shows how an RIS anomalously reflects an incident ray, intersecting the RIS at point :math:`\mathbf{q}\in\mathbb{R}^3` in the y-z plane.
-The incident ray with propagation direction :math:`\hat{\mathbf{k}}_i`, representing a locally-plane wavefront, acquires an incident phase gradient :math:`\nabla\chi_i` on the RIS' surface which can be computed as (Eq.9) [Vitucci24]_
+For the computation of coverage maps, the ray-based model from :cite:p:`Vitucci24` is used. :numref:`fig_ris_ray` shows how an RIS anomalously reflects an incident ray, intersecting the RIS at point :math:`\mathbf{q}\in\mathbb{R}^3` in the y-z plane.
+The incident ray with propagation direction :math:`\hat{\mathbf{k}}_i`, representing a locally-plane wavefront, acquires an incident phase gradient :math:`\nabla\chi_i` on the RIS' surface which can be computed as (Eq.9) :cite:p:`Vitucci24`
 
 .. math::
     :label: incident_phase_gradient
 
     \nabla \chi_i = -k_0 \left(\mathbf{I} - \hat{\mathbf{n}}\hat{\mathbf{n}}^\textsf{T} \right) \hat{\mathbf{k}}_i.
 
-Each of the RIS' reradiation modes gives rise to an additional phase gradient :math:`\nabla\chi_m` at the point of intersection, which results in the total phase gradient (Eq.11) [Vitucci24]_
+Each of the RIS' reradiation modes gives rise to an additional phase gradient :math:`\nabla\chi_m` at the point of intersection, which results in the total phase gradient (Eq.11) :cite:p:`Vitucci24`
 
 .. math::
     :label: total_phase_gradient
@@ -948,14 +948,14 @@ Each of the RIS' reradiation modes gives rise to an additional phase gradient :m
     \nabla \chi(\mathbf{q}) =  \nabla \chi_i +  \nabla \chi_m(\mathbf{q}).
 
 It is this total phase gradient that determines the direction of the reflected ray :math:`\hat{\mathbf{k}}_r`
-for reradiation mode :math:`m` which can be computed as (Eq.13) [Vitucci24]_
+for reradiation mode :math:`m` which can be computed as (Eq.13) :cite:p:`Vitucci24`
 
 .. math::
     :label: ris_reflected_direction
 
     \hat{\mathbf{k}}_r = -\frac{\nabla \chi(\mathbf{q})}{k_0} + \sqrt{1-\left\lVert\frac{\nabla \chi(\mathbf{q})}{k_0} \right\rVert^2} \hat{\mathbf{n}}.
 
-From the last equation, it becomes clear that the phase profile and its derivative must be computed at  arbitrary positions on the RIS' surface. However, in Sionna RT, phase and amplitude profiles are only configured as discrete values on a regular grid with :math:`\lambda/2` spacing. For this reason, the discrete profiles are interpolated using a :class:`~sionna.rt.ProfileInterpolator`, such as the :class:`~sionna.rt.LagrangeProfileInterpolator`. It is important to keep in mind that the phase profile typically varies on the wavelength-scale across the RIS, and the amplitude profile at an even larger scale. Both profiles must be carefully chosen to represent a physically realistic device (see, e.g., the discussion after (Eq.16) [Vitucci24]_ ).
+From the last equation, it becomes clear that the phase profile and its derivative must be computed at  arbitrary positions on the RIS' surface. However, in Sionna RT, phase and amplitude profiles are only configured as discrete values on a regular grid with :math:`\lambda/2` spacing. For this reason, the discrete profiles are interpolated using a :class:`~sionna.rt.ProfileInterpolator`, such as the :class:`~sionna.rt.LagrangeProfileInterpolator`. It is important to keep in mind that the phase profile typically varies on the wavelength-scale across the RIS, and the amplitude profile at an even larger scale. Both profiles must be carefully chosen to represent a physically realistic device (see, e.g., the discussion after (Eq.16) :cite:p:`Vitucci24` ).
 
 .. _asticmatic_ray_tube:
 .. figure:: figures/asticmatic_ray_tube.svg
@@ -964,7 +964,7 @@ From the last equation, it becomes clear that the phase profile and its derivati
 
         Infinitely narrow asticmatic ray tube.
 
-A side-effect of the anomalous ray reflection is that the reflected wavefront generally has a different shape as that of the incoming wavefront. The shape of an astigmatic wave (or ray tube), as shown in :numref:`asticmatic_ray_tube`, is represented by the curvature matrix :math:`\mathbf{Q}(s)\in\mathbb{R}^{3\times 3}` along its propagation path (see, e.g., (Appenix I) [Kouyoumjian74]_ ), which can be written as
+A side-effect of the anomalous ray reflection is that the reflected wavefront generally has a different shape as that of the incoming wavefront. The shape of an astigmatic wave (or ray tube), as shown in :numref:`asticmatic_ray_tube`, is represented by the curvature matrix :math:`\mathbf{Q}(s)\in\mathbb{R}^{3\times 3}` along its propagation path (see, e.g., (Appenix I) :cite:p:`Kouyoumjian74` ), which can be written as
 
 .. math::
     :label: curvature_matrix
@@ -974,7 +974,7 @@ A side-effect of the anomalous ray reflection is that the reflected wavefront ge
 where :math:`\rho_1` and :math:`\rho_2` are the principal radii of curvature, and :math:`\hat{\mathbf{x}}_1`
 and :math:`\hat{\mathbf{x}}_2` are the corresponding principal directions; both orthogonal to the propagation direction :math:`\mathbf{s}`, where :math:`s` denotes a point on the ray with respect to a reference point :math:`s=0`.
 
-For an incoming ray with curvature matrix :math:`\mathbf{Q}_i(\mathbf{q})` at the intersection point, the curvature matrix :math:`\mathbf{Q}_r(\mathbf{q})` of the outgoing ray can be computed as (Eq.22) [Vitucci24]_
+For an incoming ray with curvature matrix :math:`\mathbf{Q}_i(\mathbf{q})` at the intersection point, the curvature matrix :math:`\mathbf{Q}_r(\mathbf{q})` of the outgoing ray can be computed as (Eq.22) :cite:p:`Vitucci24`
 
 .. math::
     :label: ris_curvature_matrix
@@ -989,60 +989,16 @@ where :math:`\mathbf{H}_{\chi_m}(\mathbf{q})\in\mathbb{R}^{3\times 3}` is the He
     \mathbf{L} = \mathbf{I}-\frac{\hat{\mathbf{k}}_r \hat{\mathbf{n}}^\textsf{T}}{\hat{\mathbf{k}}_r^\textsf{T}\hat{\mathbf{n}}}.
 
 The principal radii of curvature of the reflected ray :math:`\rho_1^r` and :math:`\rho_2^r` are the  non-zero eigenvalues of :math:`\mathbf{Q}_r(\mathbf{q})` while the principal directions :math:`\hat{\mathbf{x}}_1^r` and :math:`\hat{\mathbf{x}}_2^r` are given by the associated eigenvectors.
-With these definitions, we are now able to express the reflected field at point :math:`\mathbf{r} = \mathbf{q}+s\hat{\mathbf{k}}_r` as a function of the incoming field at point :math:`\mathbf{q}` (Eq.23) [Vitucci24]_:
+With these definitions, we are now able to express the reflected field at point :math:`\mathbf{r} = \mathbf{q}+s\hat{\mathbf{k}}_r` as a function of the incoming field at point :math:`\mathbf{q}` (Eq.23) :cite:p:`Vitucci24`:
 
 .. math::
     :label: ris_ray_field
 
-    \begin{align}
+    \begin{aligned}
      \mathbf{E}_{r,m}(\mathbf{r}) =&   \sqrt{p_m} A_m(\mathbf{q}) e^{j \chi_m(\mathbf{q})} \sqrt{\frac{\rho_1^r \rho_2^r}{(\rho_1^r + s)(\rho_2^r + s)}}  \\
      &\quad \times\left(E_{i,\theta}(\mathbf{q}) \hat{\boldsymbol{\theta}}(\hat{\mathbf{k}}_r) +  E_{i,\varphi}(\mathbf{q}) \hat{\boldsymbol{\varphi}}(\hat{\mathbf{k}}_r)\right) e^{-jk_0 s}
-    \end{align}
+    \end{aligned}
 
 where we have assumed, as in :eq:`ris_field`, that the RIS does not realize any polarization transformation.
 
-References:
-    .. [atan2] Wikipedia, "`atan2 <https://en.wikipedia.org/wiki/Atan2>`__," accessed 8 Feb. 2023.
-
-    .. [Balanis] A\. Balanis, "Advanced Engineering Electromagnetics," John Wiley & Sons, 2012.
-
-    .. [Degli-Esposti07] V\. Degli-Esposti et al., "`Measurement and modelling of scattering from buildings <https://ieeexplore.ieee.org/abstract/document/4052607>`_," IEEE Trans. Antennas Propag, vol. 55, no. 1,  pp.143-153, Jan. 2007.
-
-    .. [Degli-Esposti11] V\. Degli-Esposti et al., "`Analysis and Modeling on co- and Cross-Polarized Urban Radio Propagation for Dual-Polarized MIMO Wireless Systems <https://ieeexplore.ieee.org/abstract/document/5979177>`_", IEEE Trans. Antennas Propag, vol. 59, no. 11,  pp.4247-4256, Nov. 2011.
-
-    .. [Degli-Esposti22] V\. Degli-Esposti et al., "`Reradiation and Scattering From a Reconfigurable Intelligent Surface: A General Macroscopic Model <https://ieeexplore.ieee.org/abstract/document/9713744>`_", IEEE Trans. Antennas Propag, vol. 70, no. 10,  pp.8691-8706, Oct. 2022.
-
-    .. [Di-Renzo20] M\. Di Renzo et al., "`Smart Radio Environments Empowered by Reconfigurable Intelligent Surfaces: How It Works, State of Research, and The Road Ahead <https://ieeexplore.ieee.org/document/9140329>`_", IEEE J. Sel. Areas Commun., vol. 38, no. 11 pp.2450-2525, Nov. 2020.
-
-    .. [Fresnel] Wikipedia, "`Fresnel integral <https://en.wikipedia.org/wiki/Fresnel_integral>`_," accessed 21 Apr. 2023.
-
-    .. [ITURP20403] ITU, "`Recommendation ITU-R P.2040-3: Effects of building materials and structures on radiowave propagation above about 100 MHz <https://www.itu.int/rec/R-REC-P.2040/en>`_". Sep. 2023.
-
-    .. [ITURP52615] ITU, "`Recommendation ITU-R P.526-15: Propagation by diffraction <https://www.itu.int/rec/R-REC-P.526/en>`_," Oct. 2019.
-
-    .. [Keller62] J\. B\. Keller, "`Geometrical Theory of Diffraction <https://opg.optica.org/josa/abstract.cfm?uri=josa-52-2-116>`_," Journal of the Optical Society of America, vol. 52, no. 2, Feb. 1962.
-
-    .. [Kline] M\. Kline, "An Asymptotic Solution of Maxwell's Equations," Commun. Pure Appl. Math., vol. 4, 1951.
-
-    .. [Kouyoumjian74] R\. G\. Kouyoumjian, "`A uniform geometrical theory of diffraction for an edge in a perfectly conducting surface <https://ieeexplore.ieee.org/abstract/document/1451581/authors#authors>`_," Proc. of the IEEE, vol. 62, no. 11, Nov. 1974.
-
-    .. [Luebbers84] R\. Luebbers, "`Finite conductivity uniform GTD versus knife edge diffraction in prediction of propagation path loss <https://ieeexplore.ieee.org/abstract/document/1143189>`_," IEEE Trans. Antennas and Propagation, vol. 32, no. 1, Jan. 1984.
-
-    .. [Luneberg] R\. M\. Luneberg, "Mathematical Theory of Optics," Brown University Press, 1944.
-
-    .. [McNamara90] D\. A\. McNamara, C.W.I. Pistorius, J.A.G. Malherbe, "`Introduction to the Uniform Geometrical Theory of Diffraction <https://us.artechhouse.com/Introduction-to-the-Uniform-Geometrical-Theory-of-Diffraction-P288.aspx>`_," Artech House, 1990.
-
-    .. [METIS] METIS Deliverable D1.4, "`METIS Channel Models <https://metis2020.com/wp-content/uploads/deliverables/METIS_D1.4_v1.0.pdf>`_", Feb. 2015.
-
-    .. [Tse] D\. Tse, P\. Viswanath, "`Fundamentals of Wireless Communication <https://web.stanford.edu/~dntse/wireless_book.html>`_", Cambridge University Press, 2005.
-
-    .. [Vitucci24] E\. M\. Vittuci et al., "`An Efficient Ray-Based Modeling Approach for Scattering From Reconfigurable Intelligent Surfaces <https://ieeexplore.ieee.org/abstract/document/10419169>`_", IEEE Trans. Antennas Propag, vol. 72, no. 3,  pp.2673-2685, Mar. 2024.
-
-    .. [Wiesbeck] N\. Geng and W\. Wiesbeck, "Planungsmethoden für die Mobilkommunikation," Springer, 1998.
-
-    .. [Wikipedia] Wikipedia, "`Maximum power transfer theorem <https://en.wikipedia.org/wiki/Maximum_power_transfer_theorem>`_," accessed 7 Oct. 2022.
-
-    .. [Wikipedia_Rodrigues] Wikipedia, "`Rodrigues' rotation formula <https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula>`_," accessed 16 Jun. 2023.
-
-    .. [Pharr] M\. Pharr, J\. Wenzel, G\. Humphreys, "`Physically Based Rendering: From Theory to Implementation <https://www.pbr-book.org/3ed-2018/contents>`_," MIT Press, 2023.
-
+For the full list of references cited in this primer and elsewhere in the RT documentation, see :doc:`references`.

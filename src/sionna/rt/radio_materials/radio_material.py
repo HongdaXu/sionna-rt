@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Class implementing a radio material"""
@@ -80,7 +80,7 @@ class RadioMaterial(RadioMaterialBase):
 
     Keyword Arguments
     -----------------
-    **kwargs: :py:class:`Any`
+    ``**kwargs``: :py:class:`Any`
         Depending on the chosen scattering antenna pattern, other keyword arguments
         must be provided.
         See the :ref:`Developer Guide <dev_custom_scattering_patterns>` for
@@ -653,8 +653,8 @@ class RadioMaterial(RadioMaterialBase):
         # This is required to enable Dr.Jit to trace this code when the material
         # is instantiated but not assigned to a scene yet.
         if self.scene is None:
-            angular_frequency = dr.two_pi * DEFAULT_FREQUENCY
-            wavelength = speed_of_light / DEFAULT_FREQUENCY
+            angular_frequency = dr.two_pi*DEFAULT_FREQUENCY
+            wavelength = speed_of_light/DEFAULT_FREQUENCY
         else:
             angular_frequency = self.scene.angular_frequency
             wavelength = self.scene.wavelength
@@ -669,7 +669,7 @@ class RadioMaterial(RadioMaterialBase):
         # ITU coefficients
         # r_te, r_tm: TE/TM reflection coefficients
         # t_te, t_tm: TE/TM transmission coefficients
-        r_te, r_tm, t_te, t_tm = \
+        r_te, r_tm, t_te, t_tm =\
             itu_coefficients_single_layer_slab(cos_theta_i, eta, self._d,
                                                wavelength)
 
@@ -679,8 +679,8 @@ class RadioMaterial(RadioMaterialBase):
         diffraction = sampled_event == InteractionType.DIFFRACTION
 
         prs, prd, pt, pd = self._event_probabilities(r_te, r_tm,
-                                                     t_te, t_tm,
-                                                     loc_en_inter)
+                                                    t_te, t_tm,
+                                                    loc_en_inter)
 
         probs = dr.select(specular, prs, prd)
         probs[transmission] = pt
@@ -761,9 +761,9 @@ class RadioMaterial(RadioMaterialBase):
         refraction_enabled = enabled_interactions & InteractionType.REFRACTION > 0
 
         # Probability of sampling a specular reflection
-        prs = dr.select(specular_reflection_enabled, r * (1. - s), mi.Float(0.))
+        prs = dr.select(specular_reflection_enabled, r*(1.-s), mi.Float(0.))
         # Probability of sampling a diffuse reflection
-        prd = dr.select(diffuse_reflection_enabled, r * s, mi.Float(0.))
+        prd = dr.select(diffuse_reflection_enabled, r*s, mi.Float(0.))
         # Probability of a transmission
         pt = dr.select(refraction_enabled, t, mi.Float(0.))
 
@@ -939,13 +939,13 @@ class RadioMaterial(RadioMaterialBase):
         solid_angle = si.t
 
         # Amplitude of the reflected field
-        er_spec = specular_reflection_mat @ ei
+        er_spec = specular_reflection_mat@ei
         er_spec_norm = dr.norm(er_spec)
         # Amplitude of the incident field
         ei_norm = dr.norm(ei)
         # Gamma coefficient
         gamma = dr.select(ei_norm > 0.,
-                          er_spec_norm * dr.rcp(ei_norm),
+                          er_spec_norm*dr.rcp(ei_norm),
                           mi.Float(0.))
 
         # Scattering pattern
@@ -957,7 +957,7 @@ class RadioMaterial(RadioMaterialBase):
         # from the implicit basis to the spherical basis. Note that this would
         # be needed otherwise, as the model used for diffuse scattering operates
         # in the basis defined by the spherical unit vectors.
-        jones_mat = dr.sqrt(fs * solid_angle) * gamma * self._xpd_jones_mat
+        jones_mat = dr.sqrt(fs*solid_angle)*gamma*self._xpd_jones_mat
 
         return jones_mat
 
@@ -1025,7 +1025,7 @@ class RadioMaterial(RadioMaterialBase):
         phi += dr.pi
 
         # Compute L
-        l = s * s_prime * dr.rcp(s + s_prime) * dr.sin(beta0)**2
+        l = s*s_prime*dr.rcp(s+s_prime) * dr.sin(beta0)**2
 
         # Compute diffraction coefficients
         n = exterior_angle * dr.rcp(dr.pi)
@@ -1034,12 +1034,12 @@ class RadioMaterial(RadioMaterialBase):
 
         def a_p_m(beta):
             # Compute n_p and n_m
-            n_p = dr.round( (beta + dr.pi) * dr.rcp(2 * exterior_angle) )
-            n_m = dr.round( (beta - dr.pi) * dr.rcp(2 * exterior_angle) )
+            n_p = dr.round( (beta + dr.pi) * dr.rcp(2*exterior_angle) )
+            n_m = dr.round( (beta - dr.pi) * dr.rcp(2*exterior_angle) )
 
             # Compute a_p and a_m
-            a_p = 2 * dr.cos(exterior_angle * n_p - beta / 2) ** 2
-            a_m = 2 * dr.cos(exterior_angle * n_m - beta / 2) ** 2
+            a_p = 2*dr.cos(exterior_angle*n_p - beta/2)**2
+            a_m = 2*dr.cos(exterior_angle*n_m - beta/2)**2
 
             return a_p, a_m
 
@@ -1047,13 +1047,12 @@ class RadioMaterial(RadioMaterialBase):
         a3, a4 = a_p_m(sum_phi)
 
         factor = -dr.exp(mi.Complex2f(0, -dr.pi/4))
-        factor *= dr.rcp(2 * n * dr.safe_sqrt(dr.two_pi * wavenumber)
-                         * dr.sin(beta0))
+        factor *= dr.rcp(2*n*dr.safe_sqrt(dr.two_pi*wavenumber)*dr.sin(beta0))
 
-        d1 = cot( (dr.pi + dif_phi) * dr.rcp(2 * n) )
-        d2 = cot( (dr.pi - dif_phi) * dr.rcp(2 * n) )
-        d3 = cot( (dr.pi + sum_phi) * dr.rcp(2 * n) )
-        d4 = cot( (dr.pi - sum_phi) * dr.rcp(2 * n) )
+        d1 = cot( (dr.pi + dif_phi) * dr.rcp(2*n) )
+        d2 = cot( (dr.pi - dif_phi) * dr.rcp(2*n) )
+        d3 = cot( (dr.pi + sum_phi) * dr.rcp(2*n) )
+        d4 = cot( (dr.pi - sum_phi) * dr.rcp(2*n) )
 
         # Complex-valued diffraction coefficients
         d1 *= factor * f_utd(wavenumber * l * a1)

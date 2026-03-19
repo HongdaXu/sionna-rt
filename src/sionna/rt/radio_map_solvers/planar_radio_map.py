@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Planar radio map"""
@@ -95,8 +95,6 @@ class PlanarRadioMap(RadioMap):
             'type': 'rectangle',
             'to_world': self._build_transform(scalar=True)
         })
-
-        self._normalization_factor = self._compute_normalization_factor()
 
         # Initialize the pathgain map to zero
         self._pathgain_map = dr.zeros(
@@ -230,7 +228,7 @@ class PlanarRadioMap(RadioMap):
 
     def add_paths(
         self,
-        e_fields: List[mi.Vector4f],
+        e_fields: mi.Vector4f,
         array_w: List[mi.Float],
         si: mi.SurfaceInteraction3f,
         k_world: mi.Vector3f,
@@ -297,12 +295,21 @@ class PlanarRadioMap(RadioMap):
             # Divide by the number of samples on this edge
             w /= wedges_samples_cnt
 
-        # Apply ray weight and normalization factor
-        a *= w * self._normalization_factor
+        # Apply paths
+        a *= w
 
         # Update the path loss map
         dr.scatter_reduce(dr.ReduceOp.Add, self._pathgain_map.array, value=a,
                           index=tensor_ind, active=active)
+
+    def finalize(self):
+        r"""Finalizes the computation of the radio map"""
+
+        # Scale the pathloss map
+        cell_area = self._cell_size[0] * self._cell_size[1]
+        scaling = dr.square(self._wavelength * dr.rcp(4. * dr.pi)) \
+                  * dr.rcp(cell_area)
+        self._pathgain_map *= scaling
 
     @property
     def to_world(self):
@@ -771,10 +778,3 @@ class PlanarRadioMap(RadioMap):
                  .rotate([0., 1., 0.], orientation_deg.y) \
                  .rotate([1., 0., 0.], orientation_deg.z) \
                  .scale([0.5 * size.x, 0.5 * size.y, 1])
-
-    def _compute_normalization_factor(self):
-        """Computes the normalization factor for the path gain map"""
-
-        cell_area = self._cell_size[0] * self._cell_size[1]
-        return dr.square(self._wavelength * dr.rcp(4. * dr.pi)) \
-               * dr.rcp(cell_area)

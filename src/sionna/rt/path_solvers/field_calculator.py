@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Computes the paths channel coefficients and delays"""
@@ -311,7 +311,7 @@ class FieldCalculator:
             # If a diffuse reflection is sampled, then it is set to 2PI.
             # Otherwise it is left unchanged
             solid_angle = dr.select(diffuse, dr.two_pi, solid_angle)
-            ki_world = dr.select(active, ko_world, ki_world)
+
             # Prepare for next iteration
             depth += 1
             ki_world = dr.select(active, ko_world, ki_world)
@@ -366,7 +366,7 @@ class FieldCalculator:
                       interaction_type: mi.UInt,
                       ki_world: mi.Vector3f,
                       ko_world: mi.Vector3f,
-                      e_fields: List[mi.Vector4f],
+                      e_fields: mi.Vector4f,
                       solid_angle: mi.Float,
                       s: mi.Float,
                       s_prime: mi.Float,

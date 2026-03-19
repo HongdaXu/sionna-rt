@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = "Sionna RT"
-copyright = "2021-2026 NVIDIA CORPORATION"
+copyright = "2021-2025 NVIDIA CORPORATION"
 
 # Read version number from sionna.__init__
 from importlib.machinery import SourceFileLoader
@@ -72,3 +72,4 @@ napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_use_keyword = True
 numfig = True
+

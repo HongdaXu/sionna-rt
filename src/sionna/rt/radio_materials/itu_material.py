@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """ITU radio materials"""
@@ -14,7 +14,7 @@ from .radio_material import RadioMaterial
 class ITURadioMaterial(RadioMaterial):
     # pylint: disable=line-too-long
     r"""
-    Class implementing the materials defined in the ITU-R P.2040-3 recommendation [ITU_R_2040_3]_
+    Class implementing the materials defined in the ITU-R P.2040-3 recommendation :cite:p:`ITURP20403`
 
     This class inherits from :class:`~sionna.rt.RadioMaterial`.
 
@@ -24,10 +24,10 @@ class ITURadioMaterial(RadioMaterial):
 
     .. math::
 
-        \begin{align}
+        \begin{aligned}
             \varepsilon_r &= a f_{\text{GHz}}^b\\
             \sigma &= c f_{\text{GHz}}^d
-        \end{align}
+        \end{aligned}
 
     where :math:`f_{\text{GHz}}` is the frequency in GHz, and the constants
     :math:`a`, :math:`b`, :math:`c`, and :math:`d` characterize the material.
@@ -104,18 +104,9 @@ class ITURadioMaterial(RadioMaterial):
             raise ValueError(f"Invalid ITU material type \"{itu_type}\"")
         self._itu_type = itu_type
 
-        # Order of priority to set the visual color of this ITU material:
-        # 1. `color` keyword argument
-        # 2. `color`, `reflectance` or `base_color` property specified in the
-        #    props (scene dictionary or XML file).
-        # 3. Default color from `ITU_MATERIAL_COLORS`.
         if color is None:
             color = ITURadioMaterial.ITU_MATERIAL_COLORS[itu_type]
             if has_props:
-                for pname in ("color", "reflectance", "base_color"):
-                    if pname in props:
-                        color = tuple(props[pname])
-                        del props[pname]
                 props["color"] = mi.ScalarColor3f(color)
 
         # Frequency update callback

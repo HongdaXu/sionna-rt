@@ -39,7 +39,7 @@ is modeled in Sionna RT as a planar surface whose radio material describes the
 desired thickness.
 
 Additionally, a :class:`~sionna.rt.RadioMaterial` can have an effective roughness (ER)
-associated with it, leading to diffuse reflections (see, e.g., [Degli-Esposti11]_).
+associated with it, leading to diffuse reflections (see, e.g., :cite:p:`Degli-Esposti11`).
 The ER model requires a scattering coefficient :math:`S\in[0,1]` :eq:`scattering_coefficient`,
 a cross-polarization discrimination coefficient :math:`K_x` :eq:`xpd`, as well as a scattering pattern
 :math:`f_\text{s}(\hat{\mathbf{k}}_\text{i}, \hat{\mathbf{k}}_\text{s})` :eq:`lambertian_model`--:eq:`backscattering_model`, such as the
@@ -53,21 +53,21 @@ are automatically updated according to the configured :attr:`~sionna.rt.Scene.fr
 .. _provided-materials:
 
 Through the :class:`~sionna.rt.ITURadioMaterial` class, Sionna provides the models of all of the materials
-defined in the ITU-R P.2040-3 recommendation [ITU_R_2040_3]_. These models are based on curve fitting to
+defined in the ITU-R P.2040-3 recommendation :cite:p:`ITURP20403`. These models are based on curve fitting to
 measurement results and assume non-ionized and non-magnetic materials
 (:math:`\mu_r = 1`).
 Frequency dependence is modeled by
 
 .. math::
-   \begin{align}
+   \begin{aligned}
       \varepsilon_r &= a f_{\text{GHz}}^b\\
       \sigma &= c f_{\text{GHz}}^d
-   \end{align}
+   \end{aligned}
 
 where :math:`f_{\text{GHz}}` is the frequency in GHz, and the constants
 :math:`a`, :math:`b`, :math:`c`, and :math:`d` characterize the material.
 The table below provides their values which are used in Sionna
-(from [ITU_R_2040_3]_).
+(from :cite:p:`ITURP20403`).
 Note that the relative permittivity :math:`\varepsilon_r` and
 conductivity :math:`\sigma` of all materials are updated automatically when
 the frequency is set through the scene's property :class:`~sionna.rt.Scene.frequency`.
@@ -148,6 +148,3 @@ Scattering Patterns
 
 .. autofunction:: sionna.rt.register_scattering_pattern
 
-References:
-    .. [Degli-Esposti11] V\. Degli-Esposti et al., "`Analysis and Modeling on co- and Cross-Polarized Urban Radio Propagation for Dual-Polarized MIMO Wireless Systems <https://ieeexplore.ieee.org/abstract/document/5979177>`_", IEEE Trans. Antennas Propag, vol. 59, no. 11,  pp.4247-4256, Nov. 2011.
-    .. [ITU_R_2040_3] Recommendation ITU-R P.2040-3, "`Effects of building materials and structures on radiowave propagation above about 100 MHz <https://www.itu.int/rec/R-REC-P.2040-3-202308-I/en>`_"

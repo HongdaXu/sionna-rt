@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Stores shooting and bouncing of rays samples data"""
@@ -112,12 +112,8 @@ class SampleData:
         shapes = dr.reinterpret_array(mi.UInt, shapes)
 
         # Store data in the buffer
-        data = SampleData.SampleDataFields(dr.detach(interaction_types),
-                                           dr.detach(shapes),
-                                           dr.detach(primitives),
-                                           dr.detach(vertices),
-                                           dr.detach(probs))
-
+        data = SampleData.SampleDataFields(interaction_types, shapes,
+                                           primitives, vertices, probs)
         self._local_mem.write(data, index, active=active)
 
         # Store the local edge index and edge properties

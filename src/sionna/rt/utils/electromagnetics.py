@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """EM utilities of Sionna RT"""
@@ -67,10 +67,10 @@ def itu_coefficients_single_layer_slab(
     r"""
     Computes the single-layer slab Fresnel transverse electric and
     magnetic reflection and refraction coefficients assuming the incident wave
-    propagates in vacuum using recommendation ITU-R P.2040 [ITU_R_2040_3_]
+    propagates in vacuum using recommendation ITU-R P.2040 :cite:p:`ITURP20403`
 
     More precisely, this function implements equations (43) and (44) from
-    [ITU_R_2040_3]_.
+    :cite:p:`ITURP20403`.
 
     :param cos_theta: Cosine of the angle of incidence
     :param eta: Complex-valued relative permittivity of the medium upon which the wave is incident
@@ -124,10 +124,10 @@ def fresnel(x: mi.Float) -> mi.Complex2f:
         F_c(x) = \int_0^{\sqrt{\frac{2x}{\pi}}} \exp\left(j\frac{\pi s^2}{2}\right)ds = C(x) + jS(x)
 
     This function computes an approximation of this integral as described in
-    Section 2.7 of [ITU_R_P_526_15]_. It has sufficient accuracy for most
+    Section 2.7 of :cite:p:`ITURP52615`. It has sufficient accuracy for most
     purposes. Note that we let the upper limit of the integral be
     :math:`\sqrt{2x/\pi}` instead of :math:`x`, which is different from the definition
-    in [ITU_R_P_526_15]_. Thus, evaluating :math:`F_c(x)` corresponds to
+    in :cite:p:`ITURP52615`. Thus, evaluating :math:`F_c(x)` corresponds to
     :math:`F_c(\sqrt{2x/\pi})` in the classical definition.
 
     :param x: Argument of the Fresnel integral
@@ -293,7 +293,7 @@ def f_utd(x: mi.Float) -> mi.Complex2f:
     Example
     -------
     The following code snippet produces a visualization of the magnitude and phase of
-    the UTD transition function which matches that of Fig. 6 in [Kouyoumjian74]_.
+    the UTD transition function which matches that of Fig. 6 in :cite:p:`Kouyoumjian74`.
 
     .. code-block:: Python
 

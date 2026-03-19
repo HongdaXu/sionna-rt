@@ -26,6 +26,3 @@ Constants
 
 .. autodata:: sionna.rt.constants.INVALID_SHAPE
 .. autodata:: sionna.rt.constants.INVALID_PRIMITIVE
-
-References:
-   .. [Wiffen2018] F\. Wiffen et al., "`Comparison of OTFS and OFDM in Ray Launched sub-6 GHz and mmWave Line-of-Sight Mobility Channels <https://ieeexplore.ieee.org/abstract/document/8580850>`_", Proc. IEEE Int. Sym. Personal, Indoor and Mobile Radio Commun. (PIMRC), Bologna, Italy, Sep. 2018.

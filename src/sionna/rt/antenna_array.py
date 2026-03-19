@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Implements classes and methods related to antenna arrays"""
@@ -161,7 +161,7 @@ class PlanarArray(AntennaArray):
         :list-registry:`sionna.rt.antenna_pattern.polarization_model_registry`.
         Defaults to "tr38901_2".
 
-    **kwargs: :py:class:`Any`
+    ``**kwargs``: :py:class:`Any`
         Depending on the chosen antenna pattern, other keyword arguments
         must be provided.
         See the :ref:`Developer Guide <dev_custom_antenna_patterns>` for

@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Scattering patterns"""
@@ -201,7 +201,7 @@ def register_scattering_pattern(
 @scattering_pattern_registry.register(name="lambertian")
 class LambertianPattern(ScatteringPattern):
     r"""
-    Lambertian scattering model from [Degli-Esposti07]_ as given in
+    Lambertian scattering model from :cite:p:`Degli-Esposti07` as given in
     :eq:`lambertian_model`
 
     Example
@@ -234,7 +234,7 @@ class LambertianPattern(ScatteringPattern):
 @scattering_pattern_registry.register(name="backscattering")
 class BackscatteringPattern(ScatteringPattern):
     r"""
-    Backscattering model from [Degli-Esposti07]_ as given in
+    Backscattering model from :cite:p:`Degli-Esposti07` as given in
     :eq:`backscattering_model`
 
     :param alpha_r: Parameter related to the width of the scattering lobe
@@ -394,7 +394,7 @@ class BackscatteringPattern(ScatteringPattern):
 @scattering_pattern_registry.register(name="directive")
 class DirectivePattern(BackscatteringPattern):
     r"""
-    Directive scattering model from [Degli-Esposti07]_ as given in
+    Directive scattering model from :cite:p:`Degli-Esposti07` as given in
     :eq:`directive_model`
 
     :param alpha_r: Parameter related to the width of the scattering lobe

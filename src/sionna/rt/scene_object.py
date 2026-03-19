@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -48,6 +48,7 @@ class SceneObject:
                           radio_material=ITURadioMaterial(name="sphere-material",
                                                         itu_type="metal",
                                                         thickness=0.01))
+
     :param mi_mesh: Mitsuba shape.
         Must be provided if ``fname`` is :py:class:`None`.
 

@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Utilities for Jones calculus"""
@@ -202,22 +202,22 @@ def jones_matrix_to_world_implicit(
     si_target_local = mi.Vector3f(k_in_local.y, -k_in_local.x, 0.)
     si_target_local = dr.normalize(si_target_local)
     si_target_local = dr.select(normal_incidence,
-                                mi.Vector3f(1., 0., 0.),
-                                si_target_local)
+                                 mi.Vector3f(1., 0., 0.),
+                                 si_target_local)
     so_current_local = si_target_local
 
-    k_in_world = to_world @ k_in_local
-    k_out_world = to_world @ k_out_local
+    k_in_world = to_world@k_in_local
+    k_out_world = to_world@k_out_local
 
     # Rotator for the incident field
     to_local = to_world.T
     si_current_world = implicit_basis_vector(k_in_world)
-    si_current_local = to_local @ si_current_world
+    si_current_local = to_local@si_current_world
     in_rotator = jones_matrix_rotator(k_in_local, si_current_local,
                                       si_target_local)
 
     # Rotator for the scattered field
-    so_current_world = to_world @ so_current_local
+    so_current_world = to_world@so_current_local
     so_target_world = implicit_basis_vector(k_out_world)
     out_rotator = jones_matrix_rotator(k_out_world, so_current_world,
                                        so_target_world)
@@ -231,22 +231,21 @@ def jones_matrix_to_world_implicit(
     c2_imag = c2.imag
 
     # Real component
-    real = mi.Matrix2f(c1_real * out_rotator[0,0], c2_real * out_rotator[0,1],
-                       c1_real * out_rotator[1,0], c2_real * out_rotator[1,1])
+    real = mi.Matrix2f(c1_real*out_rotator[0,0], c2_real*out_rotator[0,1],
+                       c1_real*out_rotator[1,0], c2_real*out_rotator[1,1])
     real @= in_rotator
 
     # Imaginary component
-    imag = mi.Matrix2f(c1_imag * out_rotator[0,0], c2_imag * out_rotator[0,1],
-                       c1_imag * out_rotator[1,0], c2_imag * out_rotator[1,1])
+    imag = mi.Matrix2f(c1_imag*out_rotator[0,0], c2_imag*out_rotator[0,1],
+                       c1_imag*out_rotator[1,0], c2_imag*out_rotator[1,1])
     imag @= in_rotator
 
     # The Jones matrix is returned as a 4x4 real-valued matrix
-    return mi.Matrix4f(
-        real[0,0], real[0,1], -imag[0,0], -imag[0,1],
-        real[1,0], real[1,1], -imag[1,0], -imag[1,1],
-        imag[0,0], imag[0,1],  real[0,0],  real[0,1],
-        imag[1,0], imag[1,1],  real[1,0],  real[1,1]
-    )
+    m4f = mi.Matrix4f(real[0,0], real[0,1], -imag[0,0], -imag[0,1],
+                      real[1,0], real[1,1], -imag[1,0], -imag[1,1],
+                      imag[0,0], imag[0,1],  real[0,0],  real[0,1],
+                      imag[1,0], imag[1,1],  real[1,0],  real[1,1])
+    return m4f
 
 def jones_vec_dot(u: mi.Vector4f, v: mi.Vector4f) -> mi.Complex2f:
     # pylint: disable=line-too-long

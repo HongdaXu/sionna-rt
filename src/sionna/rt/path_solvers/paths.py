@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Stores the computed propagation paths"""
@@ -216,7 +216,7 @@ class Paths:
         """
         Flags indicating valid paths
 
-        :type: :py:class:`mi.TensorXb [num_rx, num_rx_ant, num_tx, num_tx_ant, num_paths]  or [num_rx, num_tx, num_paths]`
+        :type: :py:class:`mi.TensorXb [num_rx, num_rx_ant, num_tx, num_tx_ant, num_paths]`
         """
         return self._valid
 
@@ -360,7 +360,7 @@ class Paths:
 
         If the transmitter emits a signal with frequency :math:`f`, the receiver
         will observe the signal at frequency :math:`f'=f + f_\Delta`, where :math:`f_\Delta` is the Doppler
-        shift, which can be computed as [Wiffen2018]_
+        shift, which can be computed as :cite:p:`Wiffen2018`
 
         .. math::
 
@@ -543,7 +543,7 @@ class Paths:
         :math:`(a_{i}^\text{b}(t), \tau_{i}), 0 \leq i \leq M-1` (which can be
         computed by :meth:`~sionna.rt.Paths.cir`), the
         :math:`\ell\text{th}` channel tap at sample instance :math:`n`
-        is computed as follows (see (Eq. 2.34) [Tse]_):
+        is computed as follows (see (Eq. 2.34) :cite:p:`Tse_RT`):
 
         .. math::
             \bar{h}_{n, \ell}

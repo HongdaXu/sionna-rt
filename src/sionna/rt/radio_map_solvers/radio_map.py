@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Radio map object"""
@@ -114,7 +114,7 @@ class RadioMap(ABC):
     @abstractmethod
     def add_paths(
         self,
-        e_fields: List[mi.Vector4f],
+        e_fields: mi.Vector4f,
         array_w: List[mi.Float],
         si: mi.SurfaceInteraction3f,
         k_world: mi.Vector3f,
@@ -152,6 +152,11 @@ class RadioMap(ABC):
         :param wedges_samples_cnt: Number of samples on the wedge.
             Not required for non-diffracted paths.
         """
+        raise NotImplementedError("RadioMap is an abstract class")
+
+    @abstractmethod
+    def finalize(self):
+        r"""Finalizes the computation of the radio map"""
         raise NotImplementedError("RadioMap is an abstract class")
 
     @property
@@ -521,13 +526,6 @@ class RadioMap(ABC):
             tensor = dr.max(tensor, axis=0)
 
         return tensor
-
-
-    @abstractmethod
-    def _compute_normalization_factor(self):
-        """Computes the normalization factor for the path gain map"""
-        raise NotImplementedError("RadioMap is an abstract class")
-
 
     def _diffraction_integration_weight(
         self,

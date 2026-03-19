@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Buffer to store paths during their computation"""
@@ -257,9 +257,8 @@ class PathsBufferBase:
 
         ind = dr.arange(mi.UInt, self.buffer_size) * self.depth_dim_size \
               + depth - 1
-        # There was a bug in the OptiX compiler stack which led to illegal
-        # memory accesses. Although it was fixed in driver 580+, we keep this
-        # workaround for backward compatibility with older drivers.
+        # Clipping indices should not be required.
+        # Could be removed when the underlying bug in OptiX or DrJit is fixed.
         assert dr.width(tensor.array) == self._tensor_width_lit
         ind &= (ind < self._tensor_width)
 
@@ -646,7 +645,6 @@ class PathsBuffer(PathsBufferBase):
         )
 
         self._buffer_size = num_paths
-        self._paths_counter = num_paths
         self._tensor_width_lit = dr.width(self._shapes.array)
         self._tensor_width = dr.opaque(mi.UInt32, self._tensor_width_lit)
 
@@ -732,7 +730,6 @@ class PathsBuffer(PathsBufferBase):
         )
 
         self._buffer_size = num_valid_paths
-        self._paths_counter = num_valid_paths
         self._tensor_width_lit = dr.width(self._shapes.array)
         self._tensor_width = dr.opaque(mi.UInt32, self._tensor_width_lit)
 

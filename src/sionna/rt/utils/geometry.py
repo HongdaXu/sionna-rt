@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Geometry utilities of Sionna RT"""
@@ -78,7 +78,7 @@ def rotation_matrix(angles: mi.Point3f) -> mi.Matrix3f:
     r"""
     Computes the rotation matrix as defined in :eq:`rotation`
 
-    The closed-form expression in (7.1-4) [TR38901]_ is used.
+    The closed-form expression in (7.1-4) :cite:p:`TR38901_RT` is used.
 
     :param angles: Angles for the rotations :math:`(\alpha,\beta,\gamma)`
         [rad] that define rotations about the axes :math:`(z, y, x)`,
