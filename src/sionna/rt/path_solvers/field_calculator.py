@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Computes the paths channel coefficients and delays"""
@@ -114,20 +114,22 @@ class FieldCalculator:
     ##################################################
 
     @dr.syntax
-    # pylint: disable=line-too-long
-    def _compute_cir(self,
-                     wavelength: mi.Float | float,
-                     paths: PathsBuffer,
-                     samples_per_src: int,
-                     diffraction_enabled: bool,
-                     src_positions: mi.Point3f,
-                     tgt_positions: mi.Point3f,
-                     src_orientations: mi.Point3f,
-                     tgt_orientations: mi.Point3f,
-                     src_antenna_patterns: List[Callable[[mi.Float,mi.Float], Tuple[mi.Complex2f,mi.Complex2f]]],
-                     tgt_antenna_patterns: List[Callable[[mi.Float,mi.Float], Tuple[mi.Complex2f,mi.Complex2f]]]
-                     ):
-        r"""
+    def _compute_cir(
+        self,
+        wavelength: mi.Float | float,
+        paths: PathsBuffer,
+        samples_per_src: int,
+        diffraction_enabled: bool,
+        src_positions: mi.Point3f,
+        tgt_positions: mi.Point3f,
+        src_orientations: mi.Point3f,
+        tgt_orientations: mi.Point3f,
+        src_antenna_patterns: List[Callable[[mi.Float,mi.Float],
+                                   Tuple[mi.Complex2f,mi.Complex2f]]],
+        tgt_antenna_patterns: List[Callable[[mi.Float,mi.Float],
+                                   Tuple[mi.Complex2f,mi.Complex2f]]]
+    ):
+        """
         Computes the channel coefficients ``a`` and delays ``tau``.
 
         The paths buffer ``paths`` is updated in-place.
@@ -135,15 +137,18 @@ class FieldCalculator:
         :param wavelength: Wavelength [m]
         :param paths: Paths buffer. Updated in-place.
         :param samples_per_src: Number of samples per source
-        :param diffraction_enabled: If set to `True`, then the diffraction is computed
+        :param diffraction_enabled: Whether to compute diffraction
         :param src_positions: Positions of the sources
         :param tgt_positions: Positions of the targets
-        :param src_orientations: Sources orientations specified through three angles [rad] corresponding to a 3D rotation as defined in :eq:`rotation`
-        :param tgt_orientations: Targets orientations specified through three angles [rad] corresponding to a 3D rotation as defined in :eq:`rotation`
+        :param src_orientations: Sources orientations specified through three
+                                 angles [rad] corresponding to a 3D rotation as
+                                 defined in :eq:`rotation`.
+        :param tgt_orientations: Targets orientations specified through three
+                                 angles [rad] corresponding to a 3D rotation as
+                                 defined in :eq:`rotation`
         :param src_antenna_patterns: Antenna pattern of the sources
         :param tgt_antenna_patterns: Antenna pattern of the targets
         """
-
         num_paths = paths.buffer_size
         max_depth = paths.max_depth
 
@@ -242,7 +247,7 @@ class FieldCalculator:
         # trace the loop twice, which is expensive.
         while dr.hint(active, mode=self.loop_mode, exclude=[wavelength]):
 
-            # Flag set to True if this is *not* the last depth
+            # Flag set to True if this is the last depth
             last_depth = depth == max_depth
 
             # Flag indicating if data about the next depth can be gathered
@@ -309,6 +314,7 @@ class FieldCalculator:
             ki_world = dr.select(active, ko_world, ki_world)
             # Prepare for next iteration
             depth += 1
+            ki_world = dr.select(active, ko_world, ki_world)
             active &= (depth <= max_depth) & ~next_is_none
             prev_vertex = dr.copy(vertex)
             vertex = dr.copy(next_vertex)
@@ -360,7 +366,7 @@ class FieldCalculator:
                       interaction_type: mi.UInt,
                       ki_world: mi.Vector3f,
                       ko_world: mi.Vector3f,
-                      e_fields: mi.Vector4f,
+                      e_fields: List[mi.Vector4f],
                       solid_angle: mi.Float,
                       s: mi.Float,
                       s_prime: mi.Float,

@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -926,6 +926,23 @@ class Scene:
             # Only meshes are supported
             if not isinstance(s, mi.Mesh):
                 raise TypeError('Only triangle meshes are supported')
+
+            # Only radio materials are supported.
+            bsdf = s.bsdf()
+            if bsdf is None:
+                raise ValueError(
+                    f"Found shape \"{s.id()}\" without an associated radio"
+                    " material while loading the scene."
+                )
+            if not isinstance(bsdf, sionna.rt.RadioMaterialBase):
+                raise ValueError(
+                    f"Found shape \"{s.id()}\" with associated material"
+                    f" \"{bsdf.id()}\", which is not a radio material."
+                    " Please use either the naming conventions for built-in"
+                    " ITU radio materials (e.g., `<bsdf ... id=\"mat-itu_concrete\"`)"
+                    " or directly use a radio material plugin (e.g.,"
+                    " `<bsdf type=\"radio-material\" ...>`)."
+                )
 
             # Instantiate the scene object
             scene_object = sionna.rt.SceneObject(mi_mesh=s,

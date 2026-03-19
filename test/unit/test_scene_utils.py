@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -195,21 +195,27 @@ def test04_scene_radio_materials():
         <bsdf type="diffuse" id="itu_custom">
             <float name="thickness" value="0.25"/>
             <string name="type" value="metal"/>
+            <rgb name="color" value="0.1, 0.2, 0.3"/>
         </bsdf>
 
-        <bsdf type="diffuse" id="itu_metal"/>
+        <bsdf type="diffuse" id="itu_metal">
+            <rgb name="reflectance" value="0.3, 0.3, 0.4"/>
+        </bsdf>
 
         <bsdf type="itu-radio-material" id="itu-human">
             <float name="thickness" value="5.65"/>
             <string name="type" value="plasterboard"/>
+            <rgb name="reflectance" value="0.5, 0.6, 0.7"/>
         </bsdf>
 
         <bsdf type="{custom_rm_type}" id="a_custom_material">
             <float name="some_param" value="3.14"/>
+            <rgb name="color" value="0.6, 0.7, 0.8"/>
         </bsdf>
 
         <bsdf type="radio-material" id="a_built_in_material">
             <float name="conductivity" value="0.789"/>
+            <rgb name="reflectance" value="0.7, 0.8, 0.9"/>
         </bsdf>
 
 
@@ -258,6 +264,7 @@ def test04_scene_radio_materials():
             <!-- Directly use a built-in radio material -->
             <bsdf type="radio-material" id="nested_built_in_material">
                 <float name="conductivity" value="0.567"/>
+                <rgb name="base_color" value="0.8, 0.9, 1.0"/>
             </bsdf>
         </shape>
 
@@ -284,22 +291,27 @@ def test04_scene_radio_materials():
 
     assert mats["itu_custom"].thickness == 0.25
     assert mats["itu_custom"].itu_type == "metal"
+    assert dr.allclose(mats["itu_custom"].color, (0.1, 0.2, 0.3))
     assert isinstance(mats["itu_custom"], ITURadioMaterial)
-
-    assert mats["itu_concrete"].thickness == 0.30
-    assert mats["itu_concrete"].itu_type == "concrete"
-    assert isinstance(mats["itu_concrete"], ITURadioMaterial)
 
     assert mats["itu_metal"].thickness == rt.constants.DEFAULT_THICKNESS
     assert mats["itu_metal"].itu_type == "metal"
+    assert dr.allclose(mats["itu_metal"].color, (0.3, 0.3, 0.4))
     assert isinstance(mats["itu_metal"], ITURadioMaterial)
 
     assert mats["itu-human"].thickness == 5.65
     assert mats["itu-human"].itu_type == "plasterboard"
+    assert dr.allclose(mats["itu-human"].color, (0.5, 0.6, 0.7))
     assert isinstance(mats["itu-human"], ITURadioMaterial)
+
+    assert mats["itu_concrete"].thickness == 0.30
+    assert mats["itu_concrete"].itu_type == "concrete"
+    assert dr.allclose(mats["itu_concrete"].color, ITURadioMaterial.ITU_MATERIAL_COLORS["concrete"])
+    assert isinstance(mats["itu_concrete"], ITURadioMaterial)
 
     assert mats["a_custom_material"].thickness == rt.constants.DEFAULT_THICKNESS
     assert mats["a_custom_material"].some_param == 3.14
+    assert dr.allclose(mats["a_custom_material"].color, (0.6, 0.7, 0.8))
     assert isinstance(mats["a_custom_material"], MyCustomRadioMaterial)
 
     assert mats["nested_custom_material"].thickness == rt.constants.DEFAULT_THICKNESS
@@ -308,10 +320,12 @@ def test04_scene_radio_materials():
 
     assert mats["a_built_in_material"].thickness == rt.constants.DEFAULT_THICKNESS
     assert mats["a_built_in_material"].conductivity == 0.789
+    assert dr.allclose(mats["a_built_in_material"].color, (0.7, 0.8, 0.9))
     assert isinstance(mats["a_built_in_material"], RadioMaterial)
 
     assert mats["nested_built_in_material"].thickness == rt.constants.DEFAULT_THICKNESS
     assert mats["nested_built_in_material"].conductivity == 0.567
+    assert dr.allclose(mats["nested_built_in_material"].color, (0.8, 0.9, 1.0))
     assert isinstance(mats["nested_built_in_material"], RadioMaterial)
 
     os.remove(tmp_path)
@@ -460,6 +474,23 @@ def test07_scene_loading_error_messages():
         load_scene_from_string("""
             <scene version="2.1.0">
                 <bsdf type="itu-radio-material" id="wet_ground"/>
+            </scene>
+        """)
+
+    # Trying to load a scene with plain visual BSDFs should fail.
+    with pytest.raises(ValueError,
+                       match=r"Found shape \"shape1\" with associated material \"mat-2f4f4f\", which is not a radio material.*"):
+        load_scene_from_string("""
+            <scene version="2.1.0">
+                <bsdf type="diffuse" id="mat-2f4f4f"/>
+
+                <shape type="cube" id="shape1">
+                    <ref name="bsdf" id="mat-2f4f4f"/>
+                </shape>
+
+                <shape type="cube" id="shape2">
+                    <bsdf type="diffuse" id="mat-itu_concrete"/>
+                </shape>
             </scene>
         """)
 

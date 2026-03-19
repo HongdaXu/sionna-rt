@@ -1,15 +1,16 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
+"""Unit tests for the interactive scene preview widget."""
 
 import drjit as dr
-import mitsuba as mi
+import pytest
 
-import sionna.rt as rt
+from sionna import rt
+from sionna.rt import PathSolver
 from sionna.rt.radio_materials.itu import itu_material
 from sionna.rt.scene import Scene, load_scene
-from sionna.rt import PathSolver
 
 
 def add_example_radio_devices(scene: Scene):
@@ -18,7 +19,8 @@ def add_example_radio_devices(scene: Scene):
     scene.add(rt.Receiver("rc-1", position=[3.0, 0.0, 1.5]))
     scene.add(
         rt.Receiver(
-            "rc-2", position=[1.0, -2.0, 3.5], color=(0.9, 0.9, 0.2), display_radius=0.9
+            "rc-2", position=[1.0, -2.0, 3.5], color=(0.9, 0.9, 0.2),
+            display_radius=0.9
         )
     )
 
@@ -47,7 +49,8 @@ def get_example_paths(scene: Scene):
     return paths
 
 
-def test01_preview_with_paths():
+@pytest.mark.parametrize("has_paths", (True, False))
+def test01_preview_basic(has_paths):
     scene = load_scene(rt.scene.box_two_screens)
 
     eta_r, sigma = itu_material("metal", 3e9)  # ITU material evaluated at 3GHz
@@ -61,25 +64,11 @@ def test01_preview_with_paths():
     add_example_radio_devices(scene)
     paths = get_example_paths(scene)
 
-    scene.preview(paths=paths)
+    if not has_paths:
+        paths._valid &= False
+        assert dr.count(paths.valid) == 0
 
-
-def test02_preview_with_paths_but_no_valid_path():
-    scene = load_scene(rt.scene.box_two_screens)
-
-    eta_r, sigma = itu_material("metal", 3e9)  # ITU material evaluated at 3GHz
-    for sh in scene.mi_scene.shapes():
-        material = sh.bsdf()
-        material.relative_permittivity = eta_r
-        material.conductivity = sigma
-        material.scattering_coefficient = 0.01
-        material.xpd_coefficient = 0.2
-
-    add_example_radio_devices(scene)
-    paths = get_example_paths(scene)
-
-    # No valid path
-    paths._valid = dr.zeros(mi.TensorXb, paths.valid.shape)
-
-    # Should not raise ValueError: need at least one array to concatenate
+    # Should work with or without valid paths.
+    # Note: we don't verify that the preview widget is actually functional,
+    # simply that no exception is thrown.
     scene.preview(paths=paths)

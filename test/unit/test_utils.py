@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -49,14 +49,16 @@ def ref_fresnel_reflection_coefficients_simplified(cos_theta, eta):
     """
 
     # sin^2(theta)
+    if dr.is_array_v(eta):
+        eta = eta.numpy()
     sin_theta_sqr = 1. - np.square(cos_theta)
     a = np.sqrt(eta - sin_theta_sqr)
 
     # TE coefficient
-    r_te = (cos_theta - a)/(cos_theta + a)
+    r_te = (cos_theta - a) / (cos_theta + a)
 
     # TM coefficient
-    r_tm = (eta*cos_theta - a)/(eta*cos_theta + a)
+    r_tm = (eta * cos_theta - a) / (eta * cos_theta + a)
 
     return r_te, r_tm
 

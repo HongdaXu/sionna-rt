@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Stores the computed propagation paths"""
@@ -548,7 +548,7 @@ class Paths:
         .. math::
             \bar{h}_{n, \ell}
             = \sum_{i=0}^{M-1} a_{i}^\text{b}\left(\frac{n}{W}\right)
-                \text{sinc}\left( \ell - W\tau_{m} \right)
+                \text{sinc}\left( \ell - W\tau_{i} \right)
 
         for :math:`\ell` ranging from ``l_min`` to ``l_max``, and where :math:`W` is
         the ``bandwidth``.

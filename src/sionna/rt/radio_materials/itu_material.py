@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """ITU radio materials"""
@@ -104,9 +104,18 @@ class ITURadioMaterial(RadioMaterial):
             raise ValueError(f"Invalid ITU material type \"{itu_type}\"")
         self._itu_type = itu_type
 
+        # Order of priority to set the visual color of this ITU material:
+        # 1. `color` keyword argument
+        # 2. `color`, `reflectance` or `base_color` property specified in the
+        #    props (scene dictionary or XML file).
+        # 3. Default color from `ITU_MATERIAL_COLORS`.
         if color is None:
             color = ITURadioMaterial.ITU_MATERIAL_COLORS[itu_type]
             if has_props:
+                for pname in ("color", "reflectance", "base_color"):
+                    if pname in props:
+                        color = tuple(props[pname])
+                        del props[pname]
                 props["color"] = mi.ScalarColor3f(color)
 
         # Frequency update callback

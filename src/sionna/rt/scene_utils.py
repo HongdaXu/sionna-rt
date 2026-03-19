@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -77,6 +77,15 @@ def process_xml(xml_string: str,
             thickness_prop = bsdf.find("float[@name='thickness']")
             if thickness_prop is not None:
                 thickness = float(thickness_prop.get("value", thickness))
+
+            # Preserve user-defined color, if any.
+            # It seems that ElementTree doesn't support OR conditions in XPath,
+            # so we just do individual queries.
+            for pname in ("color", "reflectance", "base_color"):
+                color_prop = bsdf.find(f".//rgb[@name='{pname}']")
+                if color_prop is not None:
+                    props["color"] = ("rgb", color_prop.get("value"))
+                    break
 
             # Read user-defined material type, if any
             itu_type = name[4:]

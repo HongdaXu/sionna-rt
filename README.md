@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 SPDX-License-Identifier: Apache-2.0
 -->
 # Sionna RT: The Ray Tracing Package of Sionna&trade;
@@ -24,7 +24,7 @@ pip install sionna-rt
 Sionna RT has the same requirements as Mitsuba 3 and we refer to its
 [installation guide](https://mitsuba.readthedocs.io/en/stable/) for further information.
 
-To run Sionna RT on CPU, [LLVM](https://llvm.org) is required by Dr.Jit. 
+To run Sionna RT on CPU, [LLVM](https://llvm.org) is required by Dr.Jit.
 Please check the [installation instructions for the LLVM backend](https://drjit.readthedocs.io/en/latest/what.html#backends).
 
 ### Installation from source
@@ -90,6 +90,6 @@ If you use this software, please cite it as:
  author = {Hoydis, Jakob and Cammerer, Sebastian and {Ait Aoudia}, Fayçal and Nimier-David, Merlin and Maggi, Lorenzo and Marcus, Guillermo and Vem, Avinash and Keller, Alexander},
  note = {https://nvlabs.github.io/sionna/},
  year = {2022},
- version = {1.2.1}
+ version = {1.2.2}
 }
 ```

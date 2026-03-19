@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Radio map solver"""
@@ -240,7 +240,8 @@ class RadioMapSolver:
         seed: int = 42,
         rr_depth: int = -1,
         rr_prob: float = 0.95,
-        stop_threshold: float | None = None
+        stop_threshold: float | None = None,
+        modified_scene: mi.Scene | None = None
     ) -> RadioMap:
         # pylint: disable=line-too-long
         r"""
@@ -293,6 +294,11 @@ class RadioMapSolver:
             Russian roulette is enabled
         :param stop_threshold: Gain threshold [dB] below which a path is
             deactivated
+        :param modified_scene: Advanced parameter. Can be used to provide a
+            Mitsuba scene instance that was already extended to contain the
+            measurement surface. This can be useful when calling the solver
+            in a loop with the same scene and measurement surface.
+            Not applicable to planar radio maps.
 
         :return: Computed radio map
         """
@@ -363,9 +369,15 @@ class RadioMapSolver:
         if measurement_surface is not None:
             if isinstance(measurement_surface, SceneObject):
                 measurement_surface = measurement_surface.mi_mesh
-            modified_scene = extend_scene_with_mesh(scene.mi_scene, measurement_surface)
+            if modified_scene is None:
+                modified_scene = extend_scene_with_mesh(scene.mi_scene, measurement_surface)
             radio_map = MeshRadioMap(scene, measurement_surface)
         else:
+            if modified_scene is not None:
+                raise ValueError(
+                    "Parameter `modified_scene` should be omitted (or set to None) when using"
+                    " planar radio maps (i.e., `measurement_surface` is None)."
+                )
             modified_scene = scene.mi_scene
             radio_map = PlanarRadioMap(scene, cell_size, center, orientation, size)
 
@@ -410,9 +422,6 @@ class RadioMapSolver:
                         wedges,
                         diffraction_lit_region
                     )
-
-        # Finalizes the computation of the radio maps
-        radio_map.finalize()
 
         return radio_map
 
@@ -566,7 +575,7 @@ class RadioMapSolver:
             # For first-order diffraction: project intersection points onto wedges
             # and store wedge geometry for subsequent diffraction calculations
             if dr.hint(diffraction_enabled, mode="scalar"):
-                store_wedges = active & si_scene.is_valid() & (depth == 0)\
+                store_wedges = active & si_scene.is_valid() & (depth == 0) \
                     & (si_scene.shape != radio_map.measurement_surface)
                 # Sample diffraction point on wedges
                 valid_wedge_, wedges_, _ = sample_wedge_diffraction_point(
@@ -596,8 +605,9 @@ class RadioMapSolver:
             # the scene and we only need to check that it has hit the measurement surface.
             si_mp = None
             if dr.hint(isinstance(radio_map, PlanarRadioMap), mode="scalar"):
-                si_mp = radio_map.measurement_surface.ray_intersect(ray,
-                                                                active=active)
+                si_mp = radio_map.measurement_surface.ray_intersect(
+                    ray, active=active
+                )
                 # An intersection with the measurement plane is valid only if
                 # (i) it was not obstructed by the scene, and (ii) the intersection
                 # is valid.
@@ -622,8 +632,8 @@ class RadioMapSolver:
                                 ray.d,
                                 tx_indices,
                                 update_radio_map,
-                                False,
-                                solid_angle)
+                                diffracted_paths=False,
+                                solid_angle=solid_angle)
 
             # Update the active state of rays
             # Active if has hit the scene (which includes the measurement surface
@@ -684,8 +694,8 @@ class RadioMapSolver:
 
             # Deactivate rays with gains below the set threshold
             if dr.hint(stop_threshold is not None, mode="scalar"):
-                gain_pl = gain*dr.square(scene.wavelength
-                                         * dr.rcp(4. * dr.pi * ray_tube_length))
+                gain_pl = gain * dr.square(scene.wavelength
+                                           * dr.rcp(4. * dr.pi * ray_tube_length))
                 th_continue = scene_int & (gain_pl > stop_threshold)
                 active &= th_continue
 
@@ -1023,7 +1033,7 @@ class RadioMapSolver:
         self,
         si: mi.SurfaceInteraction3f,
         k_world: mi.Vector3f,
-        e_fields: mi.Vector4f,
+        e_fields: List[mi.Vector4f],
         solid_angle: mi.Float,
         sample1: mi.Float,
         sample2: mi.Point2f,
@@ -1052,7 +1062,7 @@ class RadioMapSolver:
 
         # Ensure the normal is oriented in the opposite of the direction of
         # propagation of the incident wave
-        normal_world = si.n*dr.sign(dr.dot(si.n, -k_world))
+        normal_world = si.n * dr.sign(dr.dot(si.n, -k_world))
         si.sh_frame.n = normal_world
         si.initialize_sh_frame()
         si.n = normal_world
@@ -1067,7 +1077,7 @@ class RadioMapSolver:
 
         # Specify the components that are required
         ctx = mi.BSDFContext(mode=mi.TransportMode.Importance,
-                            type_mask=0, component=0)
+                             type_mask=0, component=0)
 
         # Samples and evaluate the radio material
         for i, e_field in enumerate(e_fields):
@@ -1079,15 +1089,17 @@ class RadioMapSolver:
             # `si.t` stores the solid angle
             si.t = solid_angle
             # Sample and evaluate the radio material
-            sample, jones_mat = si.bsdf().sample(ctx, si, sample1, sample2,
-                                                 active)
+            bs_sample, jones_mat = si.bsdf().sample(ctx, si, sample1, sample2,
+                                                    active)
             jones_mat = spectrum_to_matrix_4f(jones_mat)
             # Update the field by applying the Jones matrix
-            e_fields[i] = dr.select(active,
-                                    mi.Vector4f(jones_mat@e_field),
-                                    e_fields[i])
+            e_fields[i] = dr.select(
+                active, mi.Vector4f(jones_mat @ e_field), e_fields[i]
+            )
 
-        return sample, e_fields
+        # Note: we assume that the `bs_sample` returned is the same for all
+        # `e_field` values, so we just return the last one.
+        return bs_sample, e_fields
 
     def _evaluate_radio_material_diffraction(self,
         shape: mi.ShapePtr,
@@ -1095,7 +1107,7 @@ class RadioMapSolver:
         diff_point: mi.Point3f,
         ki_world: mi.Vector3f,
         ko_world: mi.Vector3f,
-        e_fields: mi.Vector4f,
+        e_fields: List[mi.Vector4f],
         s: mi.Float,
         s_prime: mi.Float,
         active: mi.Bool
