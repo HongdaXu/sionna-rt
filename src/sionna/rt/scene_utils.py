@@ -65,6 +65,9 @@ def process_xml(xml_string: str,
 
         # Ensure compatibility with Sionna v0.x ITU radio materials
         name = mat_id
+		if name is None:
+            bsdf_string = ET.tostring(bsdf, encoding='unicode')
+            raise ValueError(f"Found bsdf without name: {bsdf_string[:100]}")
         if name.startswith("mat-"):
             name = name[4:]
         if name.startswith("itu_") or name.startswith("itu-"):
