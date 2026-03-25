@@ -676,7 +676,7 @@ class Scene:
                 cm *= 1000
             _, normalizer, color_map = radio_map_color_mapping(
                 cm, db_scale=rm_db_scale,
-                vmin=rm_vmin, vmax=rm_vmax)
+                vmin=rm_vmin, vmax=rm_vmax, cmap=rm_cmap)
             mappable = matplotlib.cm.ScalarMappable(
                 norm=normalizer, cmap=color_map)
 
