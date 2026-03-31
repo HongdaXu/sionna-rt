@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Mesh radio map"""
@@ -32,6 +32,8 @@ class MeshRadioMap(RadioMap):
 
         self._cells_count = meas_surface.face_count()
         self._meas_surface = meas_surface
+
+        self._normalization_factor = self._compute_normalization_factor()
 
         # Initialize the pathgain map to zero
         self._pathgain_map = dr.zeros(mi.TensorXf,
@@ -84,7 +86,7 @@ class MeshRadioMap(RadioMap):
 
     def add_paths(
         self,
-        e_fields: mi.Vector4f,
+        e_fields: List[mi.Vector4f],
         array_w: List[mi.Float],
         si: mi.SurfaceInteraction3f,
         k_world: mi.Vector3f,
@@ -165,20 +167,12 @@ class MeshRadioMap(RadioMap):
         # Apply normalization by cell area
         w *= dr.rcp(cell_area)
 
-        # Apply ray weight
-        a *= w
+        # Apply ray weight and normalization factor
+        a *= w * self._normalization_factor
 
         # Update the path loss map
         dr.scatter_reduce(dr.ReduceOp.Add, self._pathgain_map.array, value=a,
                           index=tensor_ind, active=active)
-
-    def finalize(self):
-        """Finalizes the computation of the radio map."""
-
-        # Scale the pathloss map
-        wavelength = self._wavelength
-        scaling = dr.square(wavelength*dr.rcp(4.*dr.pi))
-        self._pathgain_map *= scaling
 
     def sample_positions(
         self,
@@ -351,3 +345,8 @@ class MeshRadioMap(RadioMap):
             sampled_pos = dr.reshape(mi.TensorXf, p.array, [self.num_tx, num_pos, 3])
 
         return sampled_pos, sampled_cells
+
+    def _compute_normalization_factor(self):
+        """Computes the normalization factor for the path gain map"""
+
+        return dr.square(self._wavelength * dr.rcp(4. * dr.pi))

@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Unit tests for the scene rendering feature."""
@@ -11,6 +11,7 @@ import tempfile
 import drjit as dr
 import mitsuba as mi
 import numpy as np
+import pytest
 
 import sionna.rt as rt
 from sionna.rt.radio_materials.itu import itu_material
@@ -272,3 +273,48 @@ def test05_render_mesh_radio_map_orientation():
     # Regardless of the orientation of the measurement surface, the radio map
     # should appear the same on either side.
     assert np.allclose(rendered_images[0], rendered_images[1])
+
+
+@pytest.mark.parametrize("cmap", [None, "magma"])
+def test06_render_with_custom_colormap(cmap: str | None):
+    scene = load_scene(rt.scene.simple_street_canyon, merge_shapes=False)
+    bbox = scene.mi_scene.bbox()
+    to_world = mi.ScalarTransform4f().look_at(
+        origin=mi.ScalarVector3f(1.0, 0.0, 1.5) * bbox.max,
+        target=bbox.center() - mi.ScalarVector3f(0, 0, 0.7 * bbox.center().z),
+        up=[0, 0, 1],
+    )
+    add_example_radio_devices(scene)
+    radio_map = get_example_radio_map(scene, "building_4", scale_factor=1.01)
+
+    # Compare rendering with & without our mesh-based radio map.
+    out_fname = join(tempfile.gettempdir(), f"rendering_cmap_{cmap}.png")
+    out_crop_fname = join(tempfile.gettempdir(), f"rendering_cmap_crop_{cmap}.png")
+
+    fig = scene.render(
+        camera=to_world,
+        resolution=(256, 256), num_samples=4, fov=70,
+        show_devices=True,
+        radio_map=radio_map,
+        rm_vmin=-105, rm_vmax=-65,
+        lighting_scale=1.5,
+        rm_show_color_bar=True,
+        rm_cmap=cmap
+    )
+
+    fig.savefig(out_fname, dpi=72)
+    print(f"[+] Wrote image to: {out_fname}")
+
+    # Check color in the small region that is supposed to be showing the
+    # colorbar.
+    image = mi.Bitmap(out_fname)
+    h, w = image.height(), image.width()
+    image_crop = np.array(image)[int(0.15*h):int(0.6*h), int(0.87*w):int(0.93*w), :]
+    mi.Bitmap(image_crop).write(out_crop_fname)
+    print(f"[+] Wrote cropped image to: {out_crop_fname}")
+
+    mean_color = np.mean(image_crop, axis=(0, 1))
+    expected_mean_color = [167, 208, 181, 255] \
+                          if cmap is None else [225, 179, 182, 255]
+
+    assert np.allclose(mean_color, expected_mean_color, atol=1.0)

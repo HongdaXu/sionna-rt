@@ -1,12 +1,12 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 """Sionna Ray Tracing (RT) Package"""
 
 # pylint: disable=wrong-import-position
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 import importlib
 
